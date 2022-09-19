@@ -2,17 +2,16 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <stdint.h>
 
 inline bool is_punctuation(char c)
 {
     return c == '.' || c == ',' || c == ';' || c == '(' || c == ')' ||
            c == '[' || c == ']' || c == '{' || c == '}' || c == '"' ||
            c == '=' || c == ':' || c == '-' || c == '_' || c == '!' ||
-           c == '?' || c == '$' || c == '*';
+           c == '?' || c == '$' || c == '*' || c == '\'';
 }
 
-// Gibt zurück, ob der gegebene Iterator zu einem » oder « Zeichen (UTF-8) zeigt.
+// Ob der gegebene Iterator zu einem » oder « Zeichen (UTF-8) zeigt.
 inline bool is_quotation(std::string const &s, std::string::iterator const &it)
 {
     return s.end() - it >= 2 && *it == (char)0xc2 &&
@@ -21,7 +20,8 @@ inline bool is_quotation(std::string const &s, std::string::iterator const &it)
 
 inline bool is_word(std::string const &s, std::string::iterator const &it)
 {
-    return !is_punctuation(*it) && *it != ' ' && *it != '\n' && !is_quotation(s, it);
+    return !is_punctuation(*it) && !is_quotation(s, it) &&
+           *it != ' ' && *it != '\n';
 }
 
 // Beinhaltet ein Wort / Satzzeichen und dessen Position.
@@ -31,12 +31,22 @@ struct token
     size_t line, word;
 };
 
-std::vector<token> read_text(std::string const &fname)
+// Beinhaltet entweder ein Wort oder eine Anzahl aufeinanderfolgender Lücken.
+struct pattern_token
+{
+    std::string s;
+    bool is_gap;
+    size_t a;
+};
+
+std::vector<token>
+read_text(std::string const &fname)
 {
     std::ifstream fin(fname);
+    fin.tie(0);
 
     std::vector<token> text;
-    std::string l = "\0";
+    std::string l;
     size_t line = 1;
 
     while (!fin.eof())
@@ -50,6 +60,7 @@ std::vector<token> read_text(std::string const &fname)
             std::string s;
             while (it != l.end() && is_word(l, it))
             {
+                // Wandle alle Buchstaben in Kleinbuchstaben um.
                 if (*it >= 'A' && *it <= 'Z')
                     *it = (*it - 'A') + 'a';
                 s.push_back(*it);
@@ -82,34 +93,6 @@ std::vector<token> read_text(std::string const &fname)
     return text;
 }
 
-// Der zurückgegebene Vektor beinhaltet bei Index i die Länge des längsten
-// Teilpatterns, das gleich einem Präfix des Patterns ist und bei i endet.
-std::vector<size_t> similar_subpatterns(std::vector<std::string> const &pattern)
-{
-    std::vector<size_t> v(pattern.size() + 1, 0);
-    size_t i = 1, k = 0;
-
-    while (i + k < pattern.size())
-    {
-        if (pattern[i + k] == pattern[k])
-        {
-            v[i + k] = k + 1;
-            k++;
-        }
-        else if (!k)
-        {
-            i++;
-        }
-        else
-        {
-            i = i + k - v[k];
-            k = v[k];
-        }
-    }
-
-    return v;
-}
-
 int main(int argc, char **argv)
 {
     std::string fname = "alice.txt";
@@ -117,35 +100,63 @@ int main(int argc, char **argv)
         fname = argv[1];
 
     std::vector<token> text = read_text(fname);
+    size_t n = text.size();
 
-    std::vector<std::string> pattern;
+    std::vector<pattern_token> pattern;
+    size_t m = 0;
+
     while (std::cin.peek() != EOF)
     {
         std::string s;
         std::cin >> s;
-        pattern.push_back(s);
+        if (pattern.empty() || !pattern.back().is_gap || s[0] != '_')
+            pattern.push_back({s, s[0] == '_', s[0] == '_'});
+        else
+            pattern.back().a++;
+        m++;
     }
 
-    std::vector<size_t> v = similar_subpatterns(pattern);
-    std::vector<std::pair<size_t, size_t>> occurences;
+    std::vector<std::pair<size_t, size_t>> matches;
+    size_t i = 0, j = 0, k = 0;
 
-    for (size_t i = 0; i < text.size(); i++)
+    while (i + j < n)
     {
-        size_t j = 0;
-        while (j < pattern.size() && (pattern[j] == "_" || text[i + j].s == pattern[j]))
+        if (pattern[k].is_gap)
+        {
+            j += pattern[j].a;
+            k++;
+        }
+        else if (text[i + j].s == pattern[k].s)
+        {
             j++;
+            k++;
+        }
+        else
+        {
+            j = 0;
+            k = 0;
+            i++;
+        }
 
-        if (j == pattern.size())
-            occurences.push_back(std::make_pair(text[i].line, text[i].word));
-        i = i + j - v[j];
+        if (j == m)
+        {
+            matches.push_back(std::make_pair(text[i].line, text[i].word));
+            j = 0;
+            k = 0;
+            i++;
+        }
     }
 
-    if (occurences.empty())
+    if (matches.empty())
         std::cout << "Lückensatz konnte nicht gefunden werden.\n";
     else
     {
-        std::cout << "Vorkommnisse (Zeile, Wort):\n";
-        for (auto const &[l, w] : occurences)
+        std::cout << matches.size();
+        if (matches.size() == 1)
+            std::cout << " Übereinstimmung (Zeile, Wort):\n";
+        else
+            std::cout << " Übereinstimmungen (Zeile, Wort):\n";
+        for (auto const &[l, w] : matches)
             std::cout << l << ", " << w << '\n';
     }
 }
