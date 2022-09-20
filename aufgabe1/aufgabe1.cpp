@@ -36,11 +36,10 @@ struct pattern_token
 {
     std::string s;
     bool is_gap;
-    size_t a;
+    size_t gap_len;
 };
 
-std::vector<token>
-read_text(std::string const &fname)
+std::vector<token> read_text(std::string const &fname)
 {
     std::ifstream fin(fname);
     fin.tie(0);
@@ -112,18 +111,21 @@ int main(int argc, char **argv)
         if (pattern.empty() || !pattern.back().is_gap || s[0] != '_')
             pattern.push_back({s, s[0] == '_', s[0] == '_'});
         else
-            pattern.back().a++;
+            pattern.back().gap_len++;
         m++;
     }
 
     std::vector<std::pair<size_t, size_t>> matches;
+
+    // i, j: Indinzes im Text (Tokens im Intervall [i, i + j) stimmen überein)
+    // k: Index im Lückensatz
     size_t i = 0, j = 0, k = 0;
 
     while (i + j < n)
     {
         if (pattern[k].is_gap)
         {
-            j += pattern[j].a;
+            j += pattern[j].gap_len;
             k++;
         }
         else if (text[i + j].s == pattern[k].s)
