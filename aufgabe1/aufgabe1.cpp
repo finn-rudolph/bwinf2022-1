@@ -94,7 +94,7 @@ std::vector<token> read_text(std::string const &fname)
 
 int main(int argc, char **argv)
 {
-    std::string fname = "alice.txt";
+    std::string fname = "kritik.txt";
     if (argc >= 2)
         fname = argv[1];
 
@@ -125,7 +125,7 @@ int main(int argc, char **argv)
     {
         if (pattern[k].is_gap)
         {
-            j += pattern[j].gap_len;
+            j += pattern[k].gap_len;
             k++;
         }
         else if (text[i + j].s == pattern[k].s)
@@ -140,7 +140,7 @@ int main(int argc, char **argv)
             i++;
         }
 
-        if (j == m)
+        if (j == m && i + j < n)
         {
             matches.push_back(std::make_pair(text[i].line, text[i].word));
             j = 0;

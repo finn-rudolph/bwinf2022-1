@@ -1,6 +1,6 @@
 <h1 style="text-align: center;">Aufgabe 1: Störung</h1>
 
-<p style="text-align: center;">Teilnahme-ID: </p>
+<p style="text-align: center;">Team-ID: 00968</p>
 
 <p style="text-align: center;">Finn Rudolph</p>
 
@@ -36,7 +36,7 @@ Im letzten Teil des Programms werden die Ergebnisse der Suche ausgegeben. Die An
 
 ## Beispiele
 
-Die Richtigkeit der Ausgabe wurde bei allen gezeigten Beispielen mithilfe der Suchfunktion eines Texteditors überprüft. Dazu wurde nach einem im Lückensatz vorkommenden Wort gesucht und alle Vorkommnisse dessen angesehen, um Übereinstimmungen zu finden.
+Die Richtigkeit der Ausgabe wurde bei allen gezeigten Beispielen mithilfe der Suchfunktion eines Texteditors überprüft. Dazu wurde nach einem im Lückensatz vorkommenden Wort gesucht und alle Vorkommnisse dessen angesehen, um Übereinstimmungen zu finden. Alice im Wunderland beinhaltet ca. 130 000 Zeichen ohne Leerzeichen. Um das Programm noch an einem anderen Text zu testen und zu sehen, wie es sich bei größeren Texten verhält, sind auch Beispiele mit Kant's _Kritik der reinen Vernunft_ als Suchtext (ca. 1 060 000 Zeichen) angeführt.
 
 ### Alice im Wunderland
 
@@ -109,6 +109,101 @@ wollen _ so _ sein
 1 Übereinstimmung(en) (Zeile, Wort):
 2185, 2
 ```
+
+#### stoerung6.txt
+
+```
+_
+```
+
+```
+33605 Übereinstimmungen (Zeile, Wort):
+1, 1
+1, 1
+1, 2
+1, 3
+3, 1
+3, 2
+...
+3685, 2
+3685, 3
+3685, 3
+```
+
+Dieses Beispiel wurde als Extremfall hinzugefügt, wegen der großen Zahl an Übereinstimmungen können nicht alle abgedruckt werden. Dass gleiche Wortnummern in einer Zeile mehrfach vorkommen, liegt daran, dass Satzzeichen nicht als Wörter gezählt werden aber dennoch dem Lückensatz entsprechen.
+
+### Kritik der reinen Vernunft
+
+Wie zu erwarten, zeigte sich aufgrund der großen Zeichenanzahl eine leicht erhöhte Laufzeit im Vergleich zu Alice im Wunderland. Während alle Beispiele von Alice im Wunderland nach einer Zeit $\le 80 \text{ ms}$ terminierten, lag die Grenze bei diesen Beispielen bei ca. $300 \text{ ms}$.
+
+#### kritik0.txt
+
+```
+formula _ _ _ = 0
+```
+
+```
+1 Übereinstimmung (Zeile, Wort):
+8237, 7
+```
+
+Dieses Beispiel wurde gewählt, um zu überprüfen, ob das Programm auch Lückensätze mit Satzzeichen (hier das `=`) finden kann.
+
+#### kritik1.txt
+
+```
+human _ _ _ _ _ _ that
+```
+
+```
+3 Übereinstimmungen (Zeile, Wort):
+12029, 4
+12263, 2
+17305, 13
+```
+
+Dieses Beispiel testet den Fall von vielen aufeinanderfolgenden Lücken.
+
+#### kritik2.txt
+
+```
+mathematics _ _ _ _ _ _ _ _ _ space _ _ dimensions
+```
+
+```
+1 Übereinstimmung (Zeile, Wort):
+7776, 6
+```
+
+#### kritik3.txt
+
+```
+i _ _ think
+```
+
+```
+4 Übereinstimmungen (Zeile, Wort):
+111, 10
+1481, 11
+7535, 10
+10639, 5
+```
+
+Mit diesem Beispiel wurde überprüft, ob das Programm wirklich alle Vorkommnisse eines Lückensatzes findet.
+
+#### kritik4.txt
+
+```
+semblance _ _ hypothesis ( _ _ _ _ _ _ _ another occasion _ _ _ _ _ _ _ _ _ _ _ 
+seem that _ _ _ _ _ _ _ _ _ _ _ _ _ _ opinion
+```
+
+```
+1 Übereinstimmung (Zeile, Wort):
+225, 5
+```
+
+Dieses Beispiel testet mit einem sehr langen Lückensatz wieder einen Extremfall.
 
 ## Quellcode
 
@@ -209,7 +304,7 @@ std::vector<token> read_text(std::string const &fname)
 
 int main(int argc, char **argv)
 {
-    std::string fname = "alice.txt";
+    std::string fname = "kritik.txt";
     if (argc >= 2)
         fname = argv[1];
 
@@ -240,7 +335,7 @@ int main(int argc, char **argv)
     {
         if (pattern[k].is_gap)
         {
-            j += pattern[j].gap_len;
+            j += pattern[k].gap_len;
             k++;
         }
         else if (text[i + j].s == pattern[k].s)
@@ -255,7 +350,7 @@ int main(int argc, char **argv)
             i++;
         }
 
-        if (j == m)
+        if (j == m && i + j < n)
         {
             matches.push_back(std::make_pair(text[i].line, text[i].word));
             j = 0;
@@ -279,3 +374,6 @@ int main(int argc, char **argv)
 }
 ```
 
+## Quellen
+
+- Kant, Immanuel: _Kritik der reinen Vernunft_. http://www.textfiles.com/etext/AUTHORS/KANT/c_of_p_r.txt
