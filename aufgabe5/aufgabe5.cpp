@@ -15,8 +15,7 @@ void get_reachable(std::vector<std::vector<size_t>> const &g, size_t u,
 
     while (!q.empty())
     {
-        size_t x = q.front().first;
-        size_t dis = q.front().second;
+        auto [x, dis] = q.front();
         q.pop();
 
         for (size_t y : g[x])
