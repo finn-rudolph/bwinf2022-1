@@ -3,11 +3,11 @@
 #include <queue>
 #include <tuple>
 
-typedef std::vector<std::vector<bool>> bmatrix;
-typedef std::vector<std::vector<size_t>> matrix;
-
-void get_reachable(std::vector<std::vector<size_t>> const &g, size_t u,
-                   bmatrix &reachable, matrix &pre)
+void get_reachable(
+    std::vector<std::vector<size_t>> const &g,
+    size_t u,
+    std::vector<std::vector<bool>> &reachable,
+    std::vector<std::vector<size_t>> &pre)
 {
     reachable[u][0] = 1;
     std::queue<std::pair<size_t, size_t>> q;
@@ -41,16 +41,15 @@ int main()
         g[a - 1].push_back(b - 1);
     }
 
-    size_t const dis_lim = ((n * n) + 1) / 2;
-    bmatrix r1(n, std::vector<bool>(dis_lim, 0));
-    bmatrix r2(n, std::vector<bool>(dis_lim, 0));
-    matrix pre1(n, std::vector<size_t>(dis_lim, SIZE_MAX));
-    matrix pre2(n, std::vector<size_t>(dis_lim, SIZE_MAX));
+    std::vector<std::vector<bool>> r1(n, std::vector<bool>(n * n, 0)),
+        r2(n, std::vector<bool>(n * n, 0));
+    std::vector<std::vector<size_t>> pre1(n, std::vector<size_t>(n * n, -1)),
+        pre2(n, std::vector<size_t>(n * n, -1));
 
     get_reachable(g, 0, r1, pre1);
     get_reachable(g, 1, r2, pre2);
 
-    for (size_t i = 0; i < dis_lim; i++)
+    for (size_t i = 0; i < n * n; i++)
         for (size_t u = 0; u < n; u++)
             if (r1[u][i] && r2[u][i])
             {

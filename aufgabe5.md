@@ -22,9 +22,9 @@ Schließlich muss die Breitensuche nur noch von Knoten $1$ und $2$ ausgeführt w
 
 ### Oberschranke für die Länge eines erfolgreichen Pfads
 
-Um die Oberschranke von $n^2$ zu beweisen, soll zunächst bewiesen werden, dass ein Pfad von größerer Länge als $n-1$ Zyklen enthalten muss. Die Länge eines Pfads ist die Anzahl darin enthaltender Kanten, wobei mehrfach besuchte Kanten mehrfach gezählt werden. Ein Pfad mit Länge $l > n-1$ hat mehr als $n$ Knoten, daher muss ein Knoten nach dem Schubfachprinzip mehrfach vorkommen. Die Knoten des Pfads werden als $p_1, p_2, \dots p_{l+1}$ bezeichnet. Wenn der Knoten bei Index $i$ das erste mal und bei Index $j$ das zweite Mal auftritt, dann ist die Knotenfolge $p_i, p{i+1}, \dots, p_j$ ein Zyklus, da für jedes $k : i \le k \le j$ gilt, dass $p_k$ und $p_{k+1}$ durch eine Kante verbunden sind.
+Um die Oberschranke von $n^2$ zu beweisen, soll zunächst bewiesen werden, dass ein Pfad von größerer Länge als $n-1$ Zyklen enthalten muss. Die Länge eines Pfads ist die Anzahl darin enthaltender Kanten, wobei mehrfach besuchte Kanten mehrfach gezählt werden. Ein Pfad mit Länge $l > n-1$ hat mehr als $n$ Knoten, daher muss ein Knoten nach dem Taubenschlagprinzip mehrfach vorkommen. Die Knoten des Pfads werden als $p_1, p_2, \dots p_{l+1}$ bezeichnet. Wenn der Knoten bei Index $i$ das erste mal und bei Index $j$ das zweite Mal auftritt, dann ist die Knotenfolge $p_i, p{i+1}, \dots, p_j$ ein Zyklus, da für jedes $k : i \le k \le j$ gilt, dass $p_k$ und $p_{k+1}$ durch eine Kante verbunden sind.
 
-Damit müssen im Folgenden nur Pfade mit Zyklen in Betracht gezogen werden. Auch soll angenommen werden, dass der Parcours erfolgreich abschließbar ist. Als weitere Annahme wird nur der kürzeste erfolgreiche Pfad betrachtet. Aus diesen Annahmen folgt, dass sowohl Sasha als auch Mika auf ihren Pfaden den gleichen oder verschiedene Zyklen durchlaufen müssen. Sei $l_1$ die Länge von Sashas Zyklus und $l_2$ die Länge von Mikas Zyklus. Jeder Zyklus enthält einen Knoten (genannt $t_1$ und $t_2$), sodass Sasha genau dann bei $t_1$ stehen muss, wenn Mika bei $t_2$ steht, um den Zyklus im nächsten Schritt zu verlassen und Parcours erfolgreich absolvieren zu können. Die zentrale Erekenntnis ist, dass nach $\text{lcm}(l_1, l_2)$ Schritten die Ausgangssituation wiederhergestellt ist und sich der Ablauf danach wiederholt. Daher müssen in diesen $\text{lcm}(l_1, l_2)$ Schritten alle erreichbaren Kombinationen von Knoten, an denen Sasha bzw. Mika steht, erreicht worden sein. Aus der Annahme, dass der Parcours erfolgreich absolvierbar ist, folgt, dass $t_1$ und $t_2$ nach spätestens $\text{lcm}(l_1, l_2)$ gleichzeitig erreicht werden müssen. Da $\text{lcm}(x, y) \le xy$ für positive Ganzzahlen $x, y$, ist der Parcours nach maximal $l_1l_2$ Schritten erfolgreich absolviert. Und da $l_1, l_2 \le n$, ist $n^2$ eine obere Schranke für die Anzahl benötigter Schritte.
+Damit müssen im Folgenden nur Pfade mit Zyklen in Betracht gezogen werden. Auch soll angenommen werden, dass der Parcours erfolgreich abschließbar ist. Als weitere Annahme wird nur der kürzeste erfolgreiche Pfad betrachtet. Aus diesen Annahmen folgt, dass sowohl Sasha als auch Mika auf ihren Pfaden den gleichen oder verschiedene Zyklen durchlaufen müssen. Sei $l_1$ die Länge von Sashas Zyklus und $l_2$ die Länge von Mikas Zyklus. Jeder Zyklus enthält einen Knoten (genannt $t_1$ und $t_2$), sodass Sasha genau dann bei $t_1$ stehen muss, wenn Mika bei $t_2$ steht, um den Zyklus im nächsten Schritt zu verlassen und Parcours erfolgreich absolvieren zu können. Die zentrale Erkenntnis ist, dass nach $\text{lcm}(l_1, l_2)$ Schritten die Ausgangssituation wiederhergestellt ist und sich der Ablauf danach wiederholt. Daher müssen in diesen $\text{lcm}(l_1, l_2)$ Schritten alle erreichbaren Kombinationen von Knoten, an denen Sasha bzw. Mika steht, erreicht worden sein. Aus der Annahme, dass der Parcours erfolgreich absolvierbar ist, folgt, dass $t_1$ und $t_2$ nach spätestens $\text{lcm}(l_1, l_2)$ gleichzeitig erreicht werden müssen. Da $\text{lcm}(x, y) \le xy$ für positive Ganzzahlen $x, y$, ist der Parcours nach maximal $l_1l_2$ Schritten erfolgreich absolviert. Und da $l_1, l_2 \le n$, ist $n^2$ eine obere Schranke für die Anzahl benötigter Schritte.
 
 ```mermaid
 flowchart LR
@@ -45,6 +45,8 @@ l_1 l_\max + l_2 l_\max + \dots + l_k l_\max = l_\max(l_1 + l_2 + \dots l_k) \le
 $$
 erneut eine Oberschranke.
 
+Noch eine Anmerkung: Sei $d_1$ Distanz von Sasha zu $t_1$ beim Betreten seines Zyklus und $d_2$ die Distanz von Mika zu $t_2$ beim Betreten seines Zyklus. Das erfolgreiche Absolvieren eines Graphen wie in Abbildung 1 ist genau dann möglich, wenn $d_1 \equiv d_2 \space \bmod \gcd(l_1, l_2)$.
+
 ## Laufzeitanalyse
 
  Für die Laufzeitanalyse soll gezählt werden, wie oft eine Kante gebraucht werden kann, um die Arrays eines Nachbarknoten zu aktualisieren. Sei die Kante $(u, v)$. Die Kante kann von jeder der Distanzen von $0$ bis $n^2$ von $u$ aus und von $v$ aus maximal ein mal gebraucht werden. Daher werden allein für die Kante $(u, v)$ $O(2n^2) = O(n^2)$ Rechenschritte durchgeführt. Summiert man für alle Kanten auf, beträgt die gesamte Worst-Case Zeitkomplexität $O(mn^2)$. Der spätere Vergleich der Arrays von der Breitensuche von Knoten $1$ und $2$ aus bewegt sich ebenfalls in dieser Schranke, da für jeden Knoten $n^2$ Rechenschritte durchgeführt werden. Unter der Annahme, dass der Graph verbunden ist, ist $m = \Omega (n)$.
@@ -52,6 +54,12 @@ erneut eine Oberschranke.
 Die Speicherkomplexität beträgt $\Theta(n^3)$, da für jeden Knoten ein Array von Länge $n^2$ angelegt wird.
 
 ## Implementierung
+
+Das Programm wird in C++ implementiert. Im ersten Teil des Programms (Z. 33-43 in `main`) wird der Graph eingelesen und als Adjazenzliste in der Variable `g` gespeichert. Diese Repräsentation eines Graphen eignet sich hier besonders, da schnell über alle Nachbarknoten eines Knoten iteriert werden muss. Dagegen ist es nicht nötig, schnell überprüfen zu können, ob ein bestimmter Knoten mit einem einem anderen Knoten verbunden ist (wofür eine Adjazenzmatrix oder -map besser geeignet wäre).
+
+Der zweite Teil des Programms (Z. 44-50 in `main`) besteht aus der Breitensuche jeweils von Knoten $1$ und $2$, die im Code aufgrund der 0-Indexierung zu $0$ und $1$ werden. Die Breitensuche wird von der Funktion `get_reachable` durchgeführt. Zuvor werden jedoch vier zweidimensionale Arrays angelegt: `r1` und `pre1` speichern die Erreichbarkeit und den Vorgänger bei der Breitensuche von Knoten $1$, genauso `r2` und `pre2` für Knoten $2$ (Z. 44-47). Die eigentliche Breitensuche funktioniert über eine `std::queue` von `pair<size_t, size_t>`, wie bereits beschrieben. Nach dem Entfernen eines Elements von der Warteschlange in der `while`-Schleife wird vom aktuellen Knoten `x` jeder seiner Nachbarn `y` auf mögliche neue Erreichbarkeit geprüft (Z. 18-27).
+
+Schließlich wird für jede Distanz überprüft, ob ein Knoten von $1$ und $2$ erreichbar ist. Ist das der Fall, werden die zwei Pfade über die Vorgängerarrays rekonstruiert und in den Vektoren `path1` und `path2` gespeichert. Dazu werden die aktuellen Knoten (`x` für Sashas Pfad, `y` für Mikas Pfad) dem jeweiligen Vektor hinzugefügt und dann auf deren Vorgänger gesetzt, bis kein Vorgänger mehr existiert (Z. 58-67). Da die Pfade in umgekehrter Reihenfolge rekonstruiert wurden, werden sie in umgekehrter Reihenfolge ausgegeben (Z. 70-75). Danach terminiert das Programm (Z. 77). Falls kein erfolgreicher Pfad gefunden wurde, wird diese Information ausgegeben (Z. 80).
 
 ## Beispiele
 
@@ -149,7 +157,9 @@ Mikas Pfad:
 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 1 2 3 4 
 ```
 
-In diesem Graphen überschneiden sich viele Knoten der Zyklen von Sasha und Mika, die Zyklen sind jedoch unterschiedlich. Sasha durchläuft den Zyklus $1, 4, \dots, 17, 1$, wohingegen Mika den Zyklus $1, 2, \dots, 17, 1$ verwendet.
+In diesem Graphen überschneiden sich viele Knoten der Zyklen von Sasha und Mika, die Zyklen sind jedoch unterschiedlich. Sasha durchläuft den Zyklus $1, 4, \dots, 17, 1$, wohingegen Mika den Zyklus $1, 2, \dots, 17, 1$ verwendet. Der Graph ist der Kreisgraph $C_{17}$ mit der zusätzlichen Kante $(1, 4)$. 
+
+Durch Verändern der letzten Zeile der Eingabedatei konnte interessanterweise festgestellt werden, dass sich die größte Anzahl an benötigten Sprüngen ergibt, wenn die zusätzliche Kante von $1$ nach $4$ geht. Geht diese beispielsweise von Knoten $1$ zu $14$, verwendet Sasha den Zyklus $1, 14, 15, 16, 17, 1$ und Mika den gleichen Zyklus wie zuvor, es werden $46$ Sprünge benötigt.
 
 ### huepfburg2.txt
 
@@ -301,5 +311,185 @@ Mikas Pfad:
 
 Der Graph entspricht dem in Abbildung 1.
 
+### huepfburg7.txt
+
+```
+197 198
+1 2
+2 3
+3 4
+4 5
+5 6
+...
+195 196
+196 197
+197 1
+1 4
+```
+
+Der Graph ist identisch zu `huepfburg1.txt`, außer dass der größte Zyklus aus 197 statt 17 besteht. Der Graph ist $C_{197}$, mit der Ausnahme, dass eine zusätzliche Kante von 1 zu einem anderen Knoten $v$ (hier $4$) ausgeht. 197 wurde gewählt, da es eine Primzahl ist und das Absolvieren des Pfads somit für jedes $v$ möglich ist. Die Ausgabe für $v = 4$ ist wie folgt (abgekürzt aufgrund der großen Länge).
+
+```
+benötigte Sprünge: 19111
+
+Sashas Pfad:
+1 4 5 6 7 8 9 10 ... 196 197 1 4 ...
+
+Mikas Pfad:
+2 3 4 5 6 7 8 9 10 ... 196 197 1 2 ...
+```
+
+Nach Austesten einiger anderer Werte für $v$ wurde auch hier der höchste Wert für $v = 4$ festgestellt. Begründet werden kann das dadurch, dass durch diese Wahl $\text{lcm}(l_1, l_2)$ maximiert wird. Bei $v = 4$ ist dieses beispielsweise $\text{lcm}(197, 195) = 38415$, für $v = 19$ nur $\text{lcm}(197, 170) = 33490$ und $v = 190$ nur $\text{lcm}(197, 8) =  1576$. Sasha kann Mika schneller überrunden, wenn er eine weiter reichende Abkürzung hat, so treffen sie sich früher.
+
+### huepfburg8.txt
+
+```
+6
+1 2
+1 4
+1 6
+3 2 
+3 4
+3 6
+5 2
+5 4
+5 6
+2 1
+2 3
+2 5
+4 1
+4 3
+4 5
+6 1
+6 3
+6 5
+```
+
+```
+Absolvieren des Parcours nicht möglich.
+```
+
+Der vorliegende Graph ist bipartit (der vollständige bipartite Graph $K_{3, 3}$ mit jeweils drei Knoten pro Partition). Da Sasha und Mika in unterschiedlichen Partitionen starten und mit einem Schritt jeweils nur zur anderen Partition gelangen können, werden sie nie in der gleichen Partition und damit an einem gleichen Knoten sein können.
+
+### huepfburg9.txt
+
+```
+6 18
+1 3
+1 4
+1 6
+2 3
+2 4
+2 6
+5 3
+5 4
+5 6
+3 1
+3 2
+3 5
+4 1
+4 2
+4 5
+6 1
+6 2
+6 5
+```
+
+```
+benötigte Sprünge: 1
+
+Sashas Pfad:
+1 3 
+
+Mikas Pfad:
+2 3 
+```
+
+Der Graph ist bipartit, jedoch starten Sasha und Mika in der gleichen Partition.
+
 ## Quellcode
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <tuple>
+
+void get_reachable(
+    std::vector<std::vector<size_t>> const &g,
+    size_t u,
+    std::vector<std::vector<bool>> &reachable,
+    std::vector<std::vector<size_t>> &pre)
+{
+    reachable[u][0] = 1;
+    std::queue<std::pair<size_t, size_t>> q;
+    q.push({u, 0});
+
+    while (!q.empty())
+    {
+        auto [x, dis] = q.front();
+        q.pop();
+
+        for (size_t y : g[x])
+            if (dis + 1 < reachable[0].size() && !reachable[y][dis + 1])
+            {
+                reachable[y][dis + 1] = 1;
+                pre[y][dis + 1] = x;
+                q.push({y, dis + 1});
+            }
+    }
+}
+
+int main()
+{
+    size_t n, m;
+    std::cin >> n >> m;
+
+    std::vector<std::vector<size_t>> g(n);
+    for (size_t i = 0; i < m; i++)
+    {
+        size_t a, b;
+        std::cin >> a >> b;
+        g[a - 1].push_back(b - 1);
+    }
+
+    std::vector<std::vector<bool>> r1(n, std::vector<bool>(n * n, 0)),
+        r2(n, std::vector<bool>(n * n, 0));
+    std::vector<std::vector<size_t>> pre1(n, std::vector<size_t>(n * n, -1)),
+        pre2(n, std::vector<size_t>(n * n, -1));
+
+    get_reachable(g, 0, r1, pre1);
+    get_reachable(g, 1, r2, pre2);
+
+    for (size_t i = 0; i < n * n; i++)
+        for (size_t u = 0; u < n; u++)
+            if (r1[u][i] && r2[u][i])
+            {
+                std::cout << "benötigte Sprünge: " << i << "\n\n";
+
+                std::vector<size_t> path1, path2;
+                size_t x = u, y = u;
+                while (x != SIZE_MAX)
+                {
+                    path1.push_back(x);
+                    path2.push_back(y);
+                    x = pre1[x][i];
+                    y = pre2[y][i];
+                    i--;
+                }
+
+                std::cout << "Sashas Pfad:\n";
+                for (auto it = path1.rbegin(); it != path1.rend(); it++)
+                    std::cout << (*it + 1) << ' ';
+                std::cout << "\n\nMikas Pfad:\n";
+                for (auto it = path2.rbegin(); it != path2.rend(); it++)
+                    std::cout << (*it + 1) << ' ';
+                std::cout << '\n';
+
+                return 0;
+            }
+
+    std::cout << "Absolvieren des Parcours nicht möglich.\n";
+}
+```
 
