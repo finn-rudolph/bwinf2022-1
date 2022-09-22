@@ -20,10 +20,9 @@ struct point
 {
     int x, y;
 
-    // Vergleicht nur die y-Koordinate.
-    bool operator<(point const &p) const
+    size_t get_index(int width)
     {
-        return y < p.y;
+        return (y * width + x) * 4;
     }
 };
 
@@ -88,35 +87,48 @@ std::vector<vel> gen_velocities(size_t n)
     return velocities;
 }
 
-std::vector<int> gen_times(size_t n, int width, int height)
+std::vector<int> gen_times(size_t n, int width)
 {
     std::vector<int> times(n);
     for (int &t : times)
-        t = rand_range(0, (width + height) / 8);
+        t = rand_range(0, width / 64);
     return times;
+}
+
+inline void set_color(std::vector<uint8_t> &res, int width, point p, uint8_t c)
+{
+    for (size_t i = 0; i < 3; i++)
+        res[p.get_index(width) + i] = c;
+    res[p.get_index(width) + 3] = 255;
 }
 
 void update_queue(
     std::priority_queue<event> &q,
-    std::set<point> &last,
+    std::vector<int> &last,
     std::vector<std::vector<bool>> &finished,
     int width, int height,
-    int a, int b, int y, int u, int v, uint8_t c,
-    double slope_down, double slope_up)
+    int a, int b, int x, int y, int u, int v, uint8_t c,
+    double slope_down, double slope_up, bool left)
 {
     for (int j = std::max(0, a); j <= b && j < height; j++)
     {
-        int newx = u - (double)abs(j - y) *
-                           (j < y ? slope_down : slope_up);
-        auto it = last.find({0, y});
-        int xbegin = it != last.end() ? it->x : 0;
+        int xend = x + u - (double)abs(j - y) * (j < y ? slope_down : slope_up);
+        int xbegin = last[j];
+        if (xbegin < 0 || xbegin >= width)
+            continue;
+
+        if (left)
+        {
+            xend = 2 * x - xend;
+            std::swap(xbegin, xend);
+        }
 
         bool can_continue = 1;
-        for (int k = std::max(0, xbegin); k <= newx && k < width; k++)
+        for (int k = std::max(0, xbegin); k <= xend && k < width; k++)
         {
             if (!finished[k][j])
             {
-                double t = ((double)k +
+                double t = ((double)abs(k - x) +
                             (double)abs(j - y) *
                                 (j < y ? slope_down : slope_up)) /
                            (double)v;
@@ -129,9 +141,7 @@ void update_queue(
             }
         }
 
-        last.erase(it);
-        if (can_continue)
-            last.insert({newx, j});
+        last[j] = can_continue ? (left ? xbegin - 1 : xend + 1) : -1;
     }
 }
 
@@ -140,7 +150,7 @@ int main(int argc, char **argv)
     char fname[40] = "kristallmuster.png";
     unsigned op = 0;
 
-    for (size_t i = 1; i < argc; i++)
+    for (int i = 1; i < argc; i++)
         if (!strcmp(argv[i], "-p"))
             op |= POINTS;
         else if (!strcmp(argv[i], "-v"))
@@ -164,10 +174,12 @@ int main(int argc, char **argv)
     std::cout << "Anzahl an Punkten: ";
     std::cin >> n;
 
+    srand(time(0));
+
     if (op & DIMENSIONS)
     {
-        std::cout << "Dimensionen [Höhe Breite]:\n";
-        std::cin >> height >> width;
+        std::cout << "Dimensionen [Breite Höhe]:\n";
+        std::cin >> width >> height;
         if (height > width)
             std::swap(height, width);
     }
@@ -225,7 +237,7 @@ int main(int argc, char **argv)
         }
     }
     else
-        times = gen_times(n, width, height);
+        times = gen_times(n, width);
 
     if (op & COLOR)
     {
@@ -240,12 +252,13 @@ int main(int argc, char **argv)
     else
         colors = gen_colors(n);
 
-    std::vector<std::vector<uint8_t>> res(width, std::vector<uint8_t>(height));
+    std::vector<uint8_t> res(width * height * 4, 0);
     std::vector<std::vector<bool>> finished(width, std::vector<bool>(height, 0));
     // Enthält für jedes y den Punkt, der bei der Ausbreitung nach links bzw.
     // rechts zuletzt hinzugefügt wurde. Falls die Ausbreitung für ein y nicht
     // mehr möglich ist, ist für dieses auch kein Punkt vorhanden.
-    std::vector<std::set<point>> left(n), right(n);
+    std::vector<std::vector<int>> left(n, std::vector<int>(height)),
+        right(n, std::vector<int>(height));
     // Die absoluten Steigungen der Seiten des Vierecks relativ zur y-Achse.
     std::vector<slope> slopes(n);
 
@@ -254,31 +267,54 @@ int main(int argc, char **argv)
         slopes[i].nw = (double)velocities[i].w / (double)velocities[i].n;
         slopes[i].sw = (double)velocities[i].w / (double)velocities[i].s;
         slopes[i].no = (double)velocities[i].o / (double)velocities[i].n;
-        slopes[i].nw = (double)velocities[i].o / (double)velocities[i].s;
+        slopes[i].so = (double)velocities[i].o / (double)velocities[i].s;
 
-        left[i].insert(points[i]);
-        right[i].insert(points[i]);
+        std::fill(left[i].begin(), left[i].end(), points[i].x);
+        std::fill(right[i].begin(), right[i].end(), points[i].x + 1);
     }
 
-    unsigned finished_pixels = 0;
-    for (int t = 1; finished_pixels < width * height; t++)
-    {
-        std::priority_queue<event> q;
+    int finished_pixels = 0;
+    std::priority_queue<event> q;
 
+    for (int t = 0; finished_pixels < width * height; t++)
+    {
         for (size_t i = 0; i < n; i++)
         {
-            auto [x, y] = points[i];
-            int n = velocities[i].n * t,
-                s = velocities[i].s * t,
-                o = velocities[i].o * t,
-                w = velocities[i].w * t;
+            if (times[i] < t)
+            {
+                auto [x, y] = points[i];
+                int n = velocities[i].n * (t - times[i]),
+                    s = velocities[i].s * (t - times[i]),
+                    o = velocities[i].o * (t - times[i]),
+                    w = velocities[i].w * (t - times[i]);
 
-            update_queue(q, left[i], finished, width, height,
-                         s, n, y, o, o / t, colors[i],
-                         (double)o / double(s), (double)o / (double)n);
-            update_queue(q, right[i], finished, width, height,
-                         s, n, y, w, w / t, colors[i],
-                         (double)w / (double)s, (double)w / (double)n);
+                update_queue(q, left[i], finished, width, height,
+                             y - s, y + n, x, y, o, velocities[i].o, colors[i],
+                             slopes[i].so, slopes[i].no, 1);
+                update_queue(q, right[i], finished, width, height,
+                             y - s, y + n, x, y, w, velocities[i].w, colors[i],
+                             slopes[i].sw, slopes[i].nw, 0);
+            }
+        }
+
+        while (!q.empty())
+        {
+            auto [p, curr_time, c] = q.top();
+            if (curr_time < (double)t)
+            {
+                q.pop();
+
+                if (!finished[p.x][p.y])
+                {
+                    set_color(res, width, p, c);
+                    finished[p.x][p.y] = 1;
+                    finished_pixels++;
+                }
+            }
+            else
+                break;
         }
     }
+
+    lodepng::encode(fname, res, width, height);
 }
