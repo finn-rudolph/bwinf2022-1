@@ -109,7 +109,7 @@ void update_queue(
     std::vector<std::vector<size_t>> &diagram,
     int width, int height,
     int a, int b, int x, int y, int u, int v, uint8_t c,
-    double slope_down, double slope_up, int start_time, size_t i, bool left)
+    double slope_down, double slope_up, int start_time, size_t i, bool west)
 {
     for (int j = y; j <= b && j < height; j++)
     {
@@ -133,11 +133,11 @@ void update_queue(
         if (xbegin < 0 || xbegin >= width)
             continue;
 
-        if (left)
+        if (west)
             xend = 2 * x - xend;
 
         bool can_continue = 1;
-        for (int k = xbegin; (left ? k >= xend : k <= xend) && k < width && k >= 0; k += (left ? -1 : 1))
+        for (int k = xbegin; (west ? k >= xend : k <= xend) && k < width && k >= 0; k += (west ? -1 : 1))
         {
             if (diagram[k][j] == SIZE_MAX)
             {
@@ -154,7 +154,7 @@ void update_queue(
             }
         }
 
-        last[j] = can_continue ? (left ? xend - 1 : xend + 1) : -1;
+        last[j] = can_continue ? (west ? xend - 1 : xend + 1) : -1;
     }
 }
 
@@ -267,12 +267,12 @@ int main(int argc, char **argv)
 
     std::vector<uint8_t> res(width * height * 4, 0);
     std::vector<std::vector<size_t>> diagram(width, std::vector<size_t>(height, -1));
-    // Enthält für jedes y den Punkt, der bei der Ausbreitung nach links bzw.
-    // rechts zuletzt hinzugefügt wurde. Falls die Ausbreitung für ein y nicht
-    // mehr möglich ist, ist für dieses auch kein Punkt vorhanden.
-    std::vector<std::vector<int>> left(n, std::vector<int>(height)),
-        right(n, std::vector<int>(height));
-    // Die absoluten Steigungen der Seiten des Vierecks relativ zur y-Achse.
+    // Enthält für jedes y den Punkt, der bei der Ausbreitung nach Ost bzw.
+    // West zuletzt hinzugefügt wurde. Falls die Ausbreitung für ein y nicht
+    // mehr möglich ist, steht an der Stelle -1.
+    std::vector<std::vector<int>> east(n, std::vector<int>(height)),
+        west(n, std::vector<int>(height));
+    // Die Beträge der Steigungen der Seiten des Vierecks relativ zur y-Achse.
     std::vector<slope> slopes(n);
 
     for (size_t i = 0; i < n; i++)
@@ -282,8 +282,8 @@ int main(int argc, char **argv)
         slopes[i].no = (double)velocities[i].o / (double)velocities[i].n;
         slopes[i].so = (double)velocities[i].o / (double)velocities[i].s;
 
-        std::fill(left[i].begin(), left[i].end(), points[i].x);
-        std::fill(right[i].begin(), right[i].end(), points[i].x + 1);
+        std::fill(east[i].begin(), east[i].end(), points[i].x);
+        std::fill(west[i].begin(), west[i].end(), points[i].x - 1);
     }
 
     int finished_pixels = 0;
@@ -302,12 +302,12 @@ int main(int argc, char **argv)
                     vo = velocities[i].o * (t - times[i]),
                     vw = velocities[i].w * (t - times[i]);
 
-                update_queue(q, left[i], diagram, width, height,
+                update_queue(q, east[i], diagram, width, height,
                              y - vs, y + vn, x, y, vo, velocities[i].o, colors[i],
-                             slopes[i].so, slopes[i].no, times[i], i, 1);
-                update_queue(q, right[i], diagram, width, height,
+                             slopes[i].so, slopes[i].no, times[i], i, 0);
+                update_queue(q, west[i], diagram, width, height,
                              y - vs, y + vn, x, y, vw, velocities[i].w, colors[i],
-                             slopes[i].sw, slopes[i].nw, times[i], i, 0);
+                             slopes[i].sw, slopes[i].nw, times[i], i, 1);
             }
         }
 
