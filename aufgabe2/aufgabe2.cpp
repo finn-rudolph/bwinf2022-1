@@ -40,6 +40,7 @@ struct event
 {
     point p;
     double t;
+    size_t i;
     uint8_t c;
 
     bool operator<(event const &e) const
@@ -105,15 +106,30 @@ inline void set_color(std::vector<uint8_t> &res, int width, point p, uint8_t c)
 void update_queue(
     std::priority_queue<event> &q,
     std::vector<int> &last,
-    std::vector<std::vector<bool>> &finished,
+    std::vector<std::vector<size_t>> &diagram,
     int width, int height,
     int a, int b, int x, int y, int u, int v, uint8_t c,
-    double slope_down, double slope_up, int start_time, bool left)
+    double slope_down, double slope_up, int start_time, size_t i, bool left)
 {
+    for (int j = y; j <= b && j < height; j++)
+    {
+        if (diagram[x][j] != SIZE_MAX && diagram[x][j] != i && last[j] != -1)
+            while (j < height && last[j] != -1)
+                last[j++] = -1;
+    }
+
+    for (int j = y - 1; j >= a && j >= 0; j--)
+    {
+        if (diagram[x][j] != SIZE_MAX && diagram[x][j] != i && last[j] != -1)
+            while (j >= 0 && last[j] != -1)
+                last[j--] = -1;
+    }
+
     for (int j = std::max(0, a); j <= b && j < height; j++)
     {
         int xend = x + u - (double)abs(j - y) * (j < y ? slope_down : slope_up);
         int xbegin = last[j];
+
         if (xbegin < 0 || xbegin >= width)
             continue;
 
@@ -123,13 +139,13 @@ void update_queue(
         bool can_continue = 1;
         for (int k = xbegin; (left ? k >= xend : k <= xend) && k < width && k >= 0; k += (left ? -1 : 1))
         {
-            if (!finished[k][j])
+            if (diagram[k][j] == SIZE_MAX)
             {
                 double t = ((double)abs(k - x) +
                             (double)abs(j - y) *
                                 (j < y ? slope_down : slope_up)) /
                            (double)v;
-                q.push({{k, j}, t + (double)start_time, c});
+                q.push({{k, j}, t + (double)start_time, i, c});
             }
             else
             {
@@ -250,7 +266,7 @@ int main(int argc, char **argv)
         colors = gen_colors(n);
 
     std::vector<uint8_t> res(width * height * 4, 0);
-    std::vector<std::vector<bool>> finished(width, std::vector<bool>(height, 0));
+    std::vector<std::vector<size_t>> diagram(width, std::vector<size_t>(height, -1));
     // Enthält für jedes y den Punkt, der bei der Ausbreitung nach links bzw.
     // rechts zuletzt hinzugefügt wurde. Falls die Ausbreitung für ein y nicht
     // mehr möglich ist, ist für dieses auch kein Punkt vorhanden.
@@ -286,24 +302,24 @@ int main(int argc, char **argv)
                     vo = velocities[i].o * (t - times[i]),
                     vw = velocities[i].w * (t - times[i]);
 
-                update_queue(q, left[i], finished, width, height,
+                update_queue(q, left[i], diagram, width, height,
                              y - vs, y + vn, x, y, vo, velocities[i].o, colors[i],
-                             slopes[i].so, slopes[i].no, times[i], 1);
-                update_queue(q, right[i], finished, width, height,
+                             slopes[i].so, slopes[i].no, times[i], i, 1);
+                update_queue(q, right[i], diagram, width, height,
                              y - vs, y + vn, x, y, vw, velocities[i].w, colors[i],
-                             slopes[i].sw, slopes[i].nw, times[i], 0);
+                             slopes[i].sw, slopes[i].nw, times[i], i, 0);
             }
         }
 
         while (!q.empty())
         {
-            auto [p, curr_time, c] = q.top();
+            auto [p, curr_time, i, c] = q.top();
             q.pop();
 
-            if (!finished[p.x][p.y])
+            if (diagram[p.x][p.y] == SIZE_MAX)
             {
                 set_color(res, width, p, c);
-                finished[p.x][p.y] = 1;
+                diagram[p.x][p.y] = i;
                 finished_pixels++;
             }
         }
