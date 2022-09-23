@@ -108,7 +108,7 @@ void update_queue(
     std::vector<std::vector<bool>> &finished,
     int width, int height,
     int a, int b, int x, int y, int u, int v, uint8_t c,
-    double slope_down, double slope_up, bool left)
+    double slope_down, double slope_up, int start_time, bool left)
 {
     for (int j = std::max(0, a); j <= b && j < height; j++)
     {
@@ -132,7 +132,7 @@ void update_queue(
                             (double)abs(j - y) *
                                 (j < y ? slope_down : slope_up)) /
                            (double)v;
-                q.push({{k, j}, t, c});
+                q.push({{k, j}, t + (double)start_time, c});
             }
             else
             {
@@ -274,10 +274,11 @@ int main(int argc, char **argv)
     }
 
     int finished_pixels = 0;
-    std::priority_queue<event> q;
 
     for (int t = 0; finished_pixels < width * height; t++)
     {
+        std::priority_queue<event> q;
+
         for (size_t i = 0; i < n; i++)
         {
             if (times[i] < t)
@@ -290,29 +291,24 @@ int main(int argc, char **argv)
 
                 update_queue(q, left[i], finished, width, height,
                              y - s, y + n, x, y, o, velocities[i].o, colors[i],
-                             slopes[i].so, slopes[i].no, 1);
+                             slopes[i].so, slopes[i].no, times[i], 1);
                 update_queue(q, right[i], finished, width, height,
                              y - s, y + n, x, y, w, velocities[i].w, colors[i],
-                             slopes[i].sw, slopes[i].nw, 0);
+                             slopes[i].sw, slopes[i].nw, times[i], 0);
             }
         }
 
         while (!q.empty())
         {
             auto [p, curr_time, c] = q.top();
-            if (curr_time < (double)t)
-            {
-                q.pop();
+            q.pop();
 
-                if (!finished[p.x][p.y])
-                {
-                    set_color(res, width, p, c);
-                    finished[p.x][p.y] = 1;
-                    finished_pixels++;
-                }
+            if (!finished[p.x][p.y])
+            {
+                set_color(res, width, p, c);
+                finished[p.x][p.y] = 1;
+                finished_pixels++;
             }
-            else
-                break;
         }
     }
 
