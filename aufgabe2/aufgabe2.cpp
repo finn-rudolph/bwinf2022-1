@@ -118,13 +118,10 @@ void update_queue(
             continue;
 
         if (left)
-        {
             xend = 2 * x - xend;
-            std::swap(xbegin, xend);
-        }
 
         bool can_continue = 1;
-        for (int k = std::max(0, xbegin); k <= xend && k < width; k++)
+        for (int k = xbegin; (left ? k >= xend : k <= xend) && k < width && k >= 0; k += (left ? -1 : 1))
         {
             if (!finished[k][j])
             {
@@ -141,7 +138,7 @@ void update_queue(
             }
         }
 
-        last[j] = can_continue ? (left ? xbegin - 1 : xend + 1) : -1;
+        last[j] = can_continue ? (left ? xend - 1 : xend + 1) : -1;
     }
 }
 
@@ -284,16 +281,16 @@ int main(int argc, char **argv)
             if (times[i] < t)
             {
                 auto [x, y] = points[i];
-                int n = velocities[i].n * (t - times[i]),
-                    s = velocities[i].s * (t - times[i]),
-                    o = velocities[i].o * (t - times[i]),
-                    w = velocities[i].w * (t - times[i]);
+                int vn = velocities[i].n * (t - times[i]),
+                    vs = velocities[i].s * (t - times[i]),
+                    vo = velocities[i].o * (t - times[i]),
+                    vw = velocities[i].w * (t - times[i]);
 
                 update_queue(q, left[i], finished, width, height,
-                             y - s, y + n, x, y, o, velocities[i].o, colors[i],
+                             y - vs, y + vn, x, y, vo, velocities[i].o, colors[i],
                              slopes[i].so, slopes[i].no, times[i], 1);
                 update_queue(q, right[i], finished, width, height,
-                             y - s, y + n, x, y, w, velocities[i].w, colors[i],
+                             y - vs, y + vn, x, y, vw, velocities[i].w, colors[i],
                              slopes[i].sw, slopes[i].nw, times[i], 0);
             }
         }
