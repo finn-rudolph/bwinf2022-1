@@ -261,7 +261,7 @@ int main(int argc, char **argv)
         std::cout << "Farben als Ganzzahlen zwischen 0 und 255 [c]:\n";
         for (size_t i = 0; i < n; i++)
         {
-            uint8_t c;
+            int c;
             std::cin >> c;
             colors.push_back(c);
         }

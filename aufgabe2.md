@@ -6,6 +6,10 @@
 
 <p style="text-align: center;">21. September 2022</p>
 
+**Inhaltsverzeichnis**
+
+[TOC]
+
 ## Lösungsidee
 
 Die zu erzeugenden Bilder ähneln Voronoi-Diagrammen, mit dem Unterschied, dass sich ein Kristall unterschiedlich schnell in die vier Hauptrichtungen ausbreitet. Während das Voronoi-Diagramm einer Menge von Punkten erzeugt werden kann, indem man Kreise von jedem Punkt aus wachsen lässt, bis sie auf andere Kreise treffen, kann ein Kristall erzeugt werden, indem man ein Viereck von jedem Punkt aus wachsen lässt. Seien die Ausbreitungsgeschwindigkeiten (in Pixel pro Zeiteinheit) nach Nord, Süd, Ost und West (im Folgenden $v_n, v_s, v_o, v_w$ gennant) $v_n = 3, v_s = 7, v_o = 2, v_w = 4$. Dann sieht der Kristall nach einer Zeiteinheit wie folgt aus.
@@ -59,13 +63,97 @@ Der erste Teil der `main`-Funktion (Z. 167-270) kümmert sich nur um das Einlese
 
 Zunächst werden die für die Simulation nötigen Datenstrukturen angelegt (Z. 272-282). `res` enthält das Ergebnis der Simulation und wird danach an LodePNG gegeben. `diagram` dient dazu, schnell überprüfen zu können, ob ein Pixel zu einem Kristall gehört und zu welchem. `east` und `west` enthalten für jeden Ursprung die bereits angesprochenen Arrays, in denen der letzte nach Osten bzw. Westen eingeschlossene $x$-Wert für jeden $y$-Wert für jeden Kristall steht. `slopes` dient lediglich dazu, die Steigungen aller Liniensegmente nicht ständig neu berechnen zu müssen. `east` und `west` werden inital mit $x_0$ bzw. $x_0 -1$ befüllt, sodass `east` die Punkte auf $x = x_0$ mit einschließt (Z. 291-292).
 
-Die folgende `for`-Schleife enthält die eigentliche Simulation (Z. 284-332). Bis alle Pixel in einem Kristall sind, wird an jedem Zeitpunkt für jeden bereits gestarteten Ursprung zunächst die aktuellen Ausbreitung in die vier Hauptrichtungen berechnet (Z. 305-309). Da das Einfügen von Ereignissen nach Ost und West ähnlich ist, wird es in die Funktion `update_queue` verschoben, um Codewiederholung zu vermeiden. Unter ihren (sehr zahlreichen) Parametern sind viele selbsterklärend, nur einige sollen kurz erläutert werden: `last` ist entweder `east[i]` oder `west[i]`, `a` ist die $y$-Koordinate der südlichen und `b` die der nördlichen Spitze des Kristalls. `u` ist die `vo` bzw. `vw` (siehe Z. 308-309) und `v` ist die Ausbreitungsgeschwindigkeit in Ost- bzw. Westrichtung. In `update_queue` wird zunächst überprüft, ob der Kristall nördlich oder südlich gegen einen anderen Kristall gestoßen ist (Z. 115-129). Ist das der Fall, werden in der entsprechenden Richtung alle Einträge auf `-1` gesetzt. Danach werden für jedes $j : a \le j \le b$ alle neu hinzugekommenen Punkte in die Warteschlange eingefügt. Zunächst werden die $x$-Grenzen der zu betrachteten Punkte ermittelt: Das Ende kann durch oben genannte Beziehung errechnet werden, der Anfang ist noch in `last` gespeichert. Die anschließende `for`-Schleife iteriert von der Geraden $x = x_0$ weg über alle einzufügenden $x$-Koordinaten (Z. 143-159). Es werden zwei Fälle unterschieden: Ist der Pixel noch frei, wird das als Ereignis hinzugefügt, andernfalls die Iteration abgebrochen, da der Kristall gegen einen anderen gestoßen ist. Zuletzt wird der zuletzt betrachtete $x$-Wert aktualisiert oder auf `-1` gesetzt, falls ein anderer Kristall entdeckt wurde. Der Ausdruck zur Errechnung des Zeitpunkts des Zusammenstoßes (Z. 147-150) ist leicht nachvollziehbar, in folgender Zeichnung  wird die Idee veranschaulicht.
+Die folgende `for`-Schleife enthält die eigentliche Simulation (Z. 284-332). Bis alle Pixel in einem Kristall sind, wird an jedem Zeitpunkt für jeden bereits gestarteten Ursprung zunächst die aktuellen Ausbreitung in die vier Hauptrichtungen berechnet (Z. 305-309). Da das Einfügen von Ereignissen nach Ost und West ähnlich ist, wird es in die Funktion `update_queue` verschoben, um Codewiederholung zu vermeiden. Unter ihren (sehr zahlreichen) Parametern sind viele selbsterklärend, nur einige sollen kurz erläutert werden: `last` ist entweder `east[i]` oder `west[i]`, `a` ist die $y$-Koordinate der südlichen und `b` die der nördlichen Spitze des Kristalls. `u` ist die `vo` bzw. `vw` (siehe Z. 308-309) und `v` ist die Ausbreitungsgeschwindigkeit in Ost- bzw. Westrichtung. In `update_queue` wird zunächst überprüft, ob der Kristall nördlich oder südlich gegen einen anderen Kristall gestoßen ist (Z. 115-129). Ist das der Fall, werden in der entsprechenden Richtung alle Einträge auf `-1` gesetzt. Danach werden für jedes $j : a \le j \le b$ alle neu hinzugekommenen Punkte in die Warteschlange eingefügt. Zunächst werden die $x$-Grenzen der zu betrachteten Punkte ermittelt: Das Ende kann durch oben genannte Beziehung errechnet werden, der Anfang ist noch in `last` gespeichert. Die anschließende `for`-Schleife iteriert von der Geraden $x = x_0$ weg über alle einzufügenden $x$-Koordinaten (Z. 143-159). Es werden zwei Fälle unterschieden: Ist der Pixel noch frei, wird das als Ereignis hinzugefügt, andernfalls die Iteration abgebrochen, da der Kristall gegen einen anderen gestoßen ist. Zuletzt wird der zuletzt betrachtete $x$-Wert aktualisiert oder auf `-1` gesetzt, falls ein anderer Kristall entdeckt wurde. Der Ausdruck zur Errechnung des Zeitpunkts des Zusammenstoßes (Z. 147-150) ist leicht nachvollziehbar, in Abbildung 3 wird die Idee veranschaulicht. Sie zeigt den Fall eines Punkts, der nordöstlich des Kristallursprungs liegt.
 
-// Bild Zeitformel
+![](grafiken/zeit_berechnung.svg)
+
+_Abbildung 3: Skizze zur Berechnung des Berührungszeitpunkts eines Kristalls mit einem Punkt. Siehe Z. 147-150 im Quellcode._
 
 Nachdem alle Kristallursprünge für den aktuellen Zeitpunkt verarbeitet wurde, wird die Prioritätswarteschlange geleert, sodass alle Ereignisse in richtiger Zeitfolge betrachtet werden (Z. 320-331). Wenn ein Pixel noch frei ist, wird die Farbe seines Kristalls in `res` gesetzt und in `diagram` an dieser Stelle der Index des Kristalls eingetragen. `set_color` findet sich in Z. 100-105, es setzt den R, G und B-Wert des Pixels auf den gleichen Wert, sodass ein Grauton entsteht. Der A-Wert (Alpha-Wert oder Transparenz) wird auf das Maximum gesetzt, da das Bild nicht transparent sein soll.
 
 ## Beispiele
+
+Im Folgenden werden einige völlig zufällig erzeugt Kristallmuster gezeigt, sowie Beispiele für manuelles Wählen der Parameter. Dass die Anzahl tatsächlich sichtbarer Kristalle nicht mit $n$ übereinstimmt, liegt daran, dass ein Kristallursprung bereits vor seinem Startzeitpunkt von einem anderen Kristall überdeckt wird und so nicht im Bild erscheint.
+
+### Zufällige Parameter
+
+#### kristallmuster0.png
+
+$n = 5$
+
+![](aufgabe2/beispiele/kristallmuster0.png)
+
+#### kristallmuster1.png
+
+$n = 14$
+
+![](aufgabe2/beispiele/kristallmuster1.png)
+
+#### kristallmuster2.png
+
+$n = 42$
+
+![](aufgabe2/beispiele/kristallmuster2.png)
+
+#### kristallmuster3.png
+
+$n = 197$
+
+![](aufgabe2/beispiele/kristallmuster3.png)
+
+### Manuelle Parameter
+
+#### kristallmuster4.png
+
+In diesem Beispiel werden die Startpunkte und Startzeiten manuell gewählt. Es gilt $n = 6$, die Werte der Startpunkte und -zeiten sehen wie folgt aus (eine Zeile entspricht einem Kristallursprung.
+
+| Startpunkt     | Startzeit |
+| -------------- | --------- |
+| $(100, 100)$   | $0$       |
+| $(1920, 1080)$ | $0$       |
+| $(427, 870)$   | $0$       |
+| $(1540, 35)$   | $0$       |
+| $(1024, 512)$  | $0$       |
+| $(2, 1000)$    | $0$       |
+
+![](aufgabe2/beispiele/kristallmuster4.png)
+
+Zur Erinnerung, das Koordinatensystem beginnt links oben und die positive Richtung der $y$-Achse zeigt nach unten. Alle sechs Regionen sind erkennbar, wenn auch die ausgehend von $(2, 1000)$ relativ klein wurde.
+
+#### kristallmuster5.png
+
+Nun sollen alle vier Parameter manuell gewählt werden. Es gilt $n = 8$. Die Ausbreitungsgeschwindigkeit wird als 4-Tuple angegeben, geordnet nach Nord, Süd, Ost, West.
+
+| Startpunkt    | Ausbreitungsgeschwindigkeit | Startzeit | Farbe |
+| ------------- | --------------------------- | --------- | ----- |
+| $(1, 1)$      | $(1, 7, 8, 2)$              | $0$       | $0$   |
+| $(100, 50)$   | $(4, 7, 2, 1)$              | $4$       | $255$ |
+| $(729, 81)$   | $(1, 1, 1, 1)$              | $2$       | $127$ |
+| $(812, 1013)$ | $(9, 8, 7, 6)$              | $8$       | $40$  |
+| $(1776, 800)$ | $(1, 5, 2, 3)$              | $1$       | $79$  |
+| $(1430, 197)$ | $(2, 3, 5, 7)$              | $6$       | $196$ |
+| $(1000, 500)$ | $(1, 2, 4, 8)$              | $3$       | $233$ |
+| $(333, 963)$  | $(2, 6, 1, 5)$              | $14$      | $25$  |
+
+![](aufgabe2/beispiele/kristallmuster5.png)
+
+Alle acht Regionen sind erkennbar. Beispielsweise ist das schwarze Eck links oben von Punkt 1, die große hellgraue Region oben rechts von Punkt 6 oder die große, dunkelgraue Region unten mittig von Punkt 4.
+
+#### kristallmuster6.png und kristallmuster7.png
+
+Im letzten Beispiel werden nur die Geschwindigkeiten gesetzt, und zwar alle auf 1. Damit ist das entstehende Bild gleich einem Voronoi-Diagramm mit $L_1$- oder Manhattan-Distanz als Distanzfunktion. Die Distanz zweier Punkte unter Manhattan-Distanz beträgt $|x_1 - x_2| + |y_1 - y_2|$. Im folgenden Bild (kristallmuster6.png) gilt $n = 12$.
+
+![](aufgabe2/beispiele/kristallmuster6.png)
+
+Folgendes Bild (kristallmuster7.png) hat $n = 21$.
+
+![](aufgabe2/beispiele/kristallmuster7.png)
+
+### Erzeugung ähnlicher Bilder zum gegebenen Bild
+
+Hier soll die Frage behandelt werden, mit welchen Parametern man ähnliche Bilder zu dem auf dem Aufgabenblatt gegebenen bekommt. Grundsätzlich ähneln die hier erzeugten Bilder mit großem $n$ (z. B. kristallmuster3.png) diesem, nur sind hier die Kontraste wesentlich stärker. Durch Verkleinerung des Bereichs, in dem zufällige Farben erzeugt werden, konnte folgendes Bild (kristallmuster8.png) erzeugt werden, das dem gegebenen schon sehr nahe kommt. Es gilt $n = 169$.
+
+![](aufgabe2/beispiele/kristallmuster8.png)
 
 ## Quellcode
 
