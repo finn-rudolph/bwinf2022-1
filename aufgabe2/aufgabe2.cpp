@@ -20,6 +20,7 @@ struct point
 {
     int x, y;
 
+    // Gibt den Index im Ergebnisbild zurück.
     size_t get_index(int width)
     {
         return (y * width + x) * 4;
@@ -111,13 +112,15 @@ void update_queue(
     int a, int b, int x, int y, int u, int v, uint8_t c,
     double slope_down, double slope_up, int start_time, size_t i, bool west)
 {
+    // Falls sich der Kristall nach Norden / Süden ab einem y-Wert noch nicht
+    // auf der Geraden x = x_0 ausgebreitet hat und dort bereits ein anderer
+    // Kristall ist, kann er sich nicht weiter nach Norden / Süden ausbreiten.
     for (int j = y; j <= b && j < height; j++)
     {
         if (diagram[x][j] != SIZE_MAX && diagram[x][j] != i && last[j] != -1)
             while (j < height && last[j] != -1)
                 last[j++] = -1;
     }
-
     for (int j = y - 1; j >= a && j >= 0; j--)
     {
         if (diagram[x][j] != SIZE_MAX && diagram[x][j] != i && last[j] != -1)
@@ -149,6 +152,7 @@ void update_queue(
             }
             else
             {
+                // Der Kristall ist gegen einen anderen gestoßen.
                 can_continue = 0;
                 break;
             }
@@ -265,7 +269,9 @@ int main(int argc, char **argv)
     else
         colors = gen_colors(n);
 
+    // Das Ergebnisbild RGBA-Werten für jeden Pixel.
     std::vector<uint8_t> res(width * height * 4, 0);
+    // Der Index des Kristalls, dem der Pixel zugehörig ist (oder SIZE_MAX).
     std::vector<std::vector<size_t>> diagram(width, std::vector<size_t>(height, -1));
     // Enthält für jedes y den Punkt, der bei der Ausbreitung nach Ost bzw.
     // West zuletzt hinzugefügt wurde. Falls die Ausbreitung für ein y nicht
