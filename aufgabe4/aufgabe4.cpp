@@ -64,9 +64,8 @@ inline uint64_t do_task(task &t, uint64_t curr_time)
 
     if (t.len)
     {
-        // Füge die Zeit der Nächte hinzu, die der Auftrag andauert.
-        t.completion += (t.len / minutes(8) + 1) * minutes(16);
-        t.completion += t.len;
+        // Füge auch die Zeit der Nächte hinzu, die der Auftrag andauert.
+        t.completion += (t.len / minutes(8) + 1) * minutes(16) + t.len;
     }
     return t.completion;
 }
