@@ -18,6 +18,7 @@ void get_reachable(
         auto [x, dis] = q.front();
         q.pop();
 
+        // Markiere noch nicht erreichte Nachbarn als erreichbar.
         for (size_t y : g[x])
             if (dis + 1 < reachable[0].size() && !reachable[y][dis + 1])
             {
@@ -41,8 +42,11 @@ int main()
         g[a - 1].push_back(b - 1);
     }
 
+    // Enthält bei [u][i], ob Vertex u von Vertex 0 bzw. 1 mit i Sprüngen
+    // erreichbar ist.
     std::vector<std::vector<bool>> r1(n, std::vector<bool>(n * n, 0)),
         r2(n, std::vector<bool>(n * n, 0));
+    // Enthält den Vorgänger von u nach i Sprüngen bei [u][i].
     std::vector<std::vector<size_t>> pre1(n, std::vector<size_t>(n * n, -1)),
         pre2(n, std::vector<size_t>(n * n, -1));
 
@@ -55,6 +59,7 @@ int main()
             {
                 std::cout << "benötigte Sprünge: " << i << "\n\n";
 
+                // Rekonstruktion des Pfads von Vertex 0 bzw. 1.
                 std::vector<size_t> path1, path2;
                 size_t x = u, y = u;
                 while (x != SIZE_MAX)
