@@ -24,40 +24,40 @@ inline bool is_word(std::string const &s, std::string::iterator const &it)
            *it != ' ' && *it != '\n';
 }
 
-// Beinhaltet ein Wort / Satzzeichen und dessen Position.
-struct token
+struct word
 {
     std::string s;
-    size_t line, word;
+    size_t l, w;
 };
 
 // Beinhaltet entweder ein Wort oder eine Anzahl aufeinanderfolgender Lücken.
-struct pattern_token
+struct pattern_elem
 {
     std::string s;
     bool is_gap;
     size_t gap_len;
 };
 
-std::vector<token> read_text(std::string const &fname)
+std::vector<word> read_text(std::string const &fname)
 {
     std::ifstream fin(fname);
     fin.tie(0);
 
-    std::vector<token> text;
-    std::string l;
-    size_t line = 1;
+    std::vector<word> text;
+    std::string line;
+    size_t l = 1;
 
     while (!fin.eof())
     {
-        std::getline(fin, l);
-        size_t word = 1;
+        std::getline(fin, line);
+        size_t w = 1;
 
-        for (auto it = l.begin(); it != l.end(); it++)
+        auto it = line.begin();
+        while (it != line.end())
         {
 
             std::string s;
-            while (it != l.end() && is_word(l, it))
+            while (it != line.end() && is_word(line, it))
             {
                 // Wandle alle Buchstaben in Kleinbuchstaben um.
                 if (*it >= 'A' && *it <= 'Z')
@@ -67,26 +67,19 @@ std::vector<token> read_text(std::string const &fname)
             }
 
             if (!s.empty())
-                text.push_back({s, line, word});
+                text.push_back({s, l, w});
 
-            while (it != l.end() && !is_word(l, it))
+            // Überspringe Satz- und Leerzeichen.
+            while (it != line.end() && !is_word(line, it))
             {
-                if (is_punctuation(*it))
-                    text.push_back({std::string(1, *it), line, word});
-                else if (is_quotation(l, it))
-                {
-                    text.push_back({std::string({*it, *(it + 1)}), line, word});
+                if (is_quotation(line, it))
                     it++;
-                }
                 it++;
             }
-
-            if (*it != ' ')
-                it--;
-            word++;
+            w++;
         }
 
-        line++;
+        l++;
     }
 
     return text;
@@ -94,14 +87,14 @@ std::vector<token> read_text(std::string const &fname)
 
 int main(int argc, char **argv)
 {
-    std::string fname = "kritik.txt";
+    std::string fname = "alice.txt";
     if (argc >= 2)
         fname = argv[1];
 
-    std::vector<token> text = read_text(fname);
+    std::vector<word> text = read_text(fname);
     size_t n = text.size();
 
-    std::vector<pattern_token> pattern;
+    std::vector<pattern_elem> pattern;
     size_t m = 0;
 
     while (std::cin.peek() != EOF)
@@ -117,7 +110,7 @@ int main(int argc, char **argv)
 
     std::vector<std::pair<size_t, size_t>> matches;
 
-    // i, j: Indinzes im Text (Tokens im Intervall [i, i + j) stimmen überein)
+    // i, j: Indizes im Text (Wörter im Intervall [i, i + j) stimmen überein)
     // k: Index im Lückensatz
     size_t i = 0, j = 0, k = 0;
 
@@ -142,7 +135,7 @@ int main(int argc, char **argv)
 
         if (j == m && i + j < n)
         {
-            matches.push_back(std::make_pair(text[i].line, text[i].word));
+            matches.push_back(std::make_pair(text[i].l, text[i].w));
             j = 0;
             k = 0;
             i++;
