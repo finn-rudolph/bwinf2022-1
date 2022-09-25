@@ -44,13 +44,13 @@ $$
 $$
 Jedoch ist auch hier die erste Folge aufgrund der faireren Verteilung an Wartezeit besser geeignet. Um die Gesamtwartezeit und Gleichmäßigkeit der Verteilung in einer Größe zu erfassen, soll die neue Größe der Durchschnitt der Quadrate der Wartezeiten sein. Die Werte für das erste Beispiele sind $33 / 5$ für die erste Folge und $81/5$ für die zweite Folge. Wie man sieht, hat die sehr große Wartezeit von $9$ bei der zweiten Folge den Ausschlag gegeben, dass die Summe der Quadrate höher ist. Für das zweite Beispiel sind die Werte $72/5$ für die erste Folge und $108/5$ für die zweite Folge. Auch hier wurde die ungleichmäßigere Verteilung erfasst. Man kann an der Summe der Quadrate bemängeln, dass für eine gleichmäßigere Verteilung auch eine höhere durchschnittliche Wartezeit in Kauf genommen wird. Jedoch ist das aus Sicht eines Kunden, der eine sehr lange Wartezeit abbekommt, durchaus das richtige Vorgehen.
 
-Das Hauptproblem der beiden obigen Verfahren zur Abarbeitung von Aufträgen ist, dass sie nur eine der zwei gegebenen Größen eines Auftrags in Betracht ziehen. Das erste Verfahren achtet allein auf die Eingangszeit, das zweite Verfahren allein auf die Dauer. Daher ist eine naheliegende Idee, die Eingangszeit und Dauer zu einer Größe, die die Priorität eines Auftrags angibt, zu kombinieren. Sei $f(e, d)$ eine Funktion, die die Priorität eines Auftrags angibt, wobei $d$ die Dauer und $e$ die Eingangszeit des Auftrags ist. Kleinere Werte von $f$ bedeuten größere Priorität. Es ergeben sich sehr viele Möglichkeiten für $f$, einige Beispiele sind ($a$ und $b$ sind Konstanten)
+Das Hauptproblem der beiden obigen Verfahren zur Abarbeitung von Aufträgen ist, dass sie nur eine der zwei gegebenen Größen eines Auftrags in Betracht ziehen. Das erste Verfahren achtet allein auf die Eingangszeit, das zweite Verfahren allein auf die Dauer. Daher ist eine naheliegende Idee, die Eingangszeit und Dauer zu einer Größe, die die Priorität eines Auftrags angibt, zu kombinieren. Die Idee dahinter ist, dass beide Kundenwünsche - das schnelle Abarbeiten kurzer Aufträge und keine sehr langen Wartezeiten - erfüllt werden können. Nimmt man beispielsweise die Summe aus Eingangszeit und Dauer als Priorität (geringerer Wert bedeutet höhere Priorität), kann ein kurzer Auftrag auch bei späterer Eingangszeit noch höher priorisiert sein. Geht er jedoch sehr viel später als ein längerer zuvor eingeangener Auftrag ein, wird er niedriger priorisiert. Sei $f(e, d)$ eine Funktion, die die Priorität eines Auftrags angibt, wobei $d$ die Dauer und $e$ die Eingangszeit des Auftrags ist. Kleinere Werte von $f$ bedeuten größere Priorität. Es ergeben sich sehr viele Möglichkeiten für $f$, einige Beispiele sind folgende ($a$ und $b$ sind Konstanten).
 $$
 f_1(e, d) = a\cdot e + b \cdot d \\
 f_2(e, d) = a \cdot e + b \cdot d^2 \\
 f_3(e, d) = a \cdot e + b^d
 $$
-Durch Veränderung von $f$ kann der Eingangszeit oder der Dauer eines Auftrags ein höherer Stellenwert zugewiesen werden. Beispielsweise ist bei $f_2$ die Dauer eines Auftrags entscheidender als bei $f_1$, und bei $f_3$ ist diese nochmal entscheidender als bei $f_2$. Die Zuweisungen der Priorität in den ersten beiden Versionen sind nur Spezialfälle mit $f(e, d) = e$ für das Abarbeiten der Aufträge in Reihenfolge und $f(e, d) = d$ für die Wahl des aktuell kürzesten Auftrags. Nun gilt es herauszufinden, welches $f$ einen geringstmöglichen Durchschnitt der Quadrate liefert. Dafür müssen schon einige Beispiele vorweggenommen werden. Nach einigen Versuchen stellten sich Werte von $f$ mit einem quadratischen oder sogar exponentiellen Zusammenhang als ungeeignet heraus, da sie $e$ oder $d$ zu stark gewichten. Daher werden im Folgenden nur Funktionen $f(e, d) = a \cdot e + b \cdot d$ betrachtet. Die Mittelwerte der Quadrate der Wartezeiten sind für einige Werte von $a$ und $b$ in Tabelle 1 aufgelistet.
+Durch Veränderung von $f$ kann der Eingangszeit oder der Dauer eines Auftrags ein höherer Stellenwert zugewiesen werden. Beispielsweise ist bei $f_2$ die Dauer eines Auftrags entscheidender als bei $f_1$, und bei $f_3$ ist diese nochmal entscheidender als bei $f_2$. Die Zuweisungen der Priorität in den gegebenen Verfahren sind nur Spezialfälle mit $f(e, d) = e$ für das Abarbeiten der Aufträge in Reihenfolge und $f(e, d) = d$ für die Wahl des aktuell kürzesten Auftrags. Nun gilt es herauszufinden, welches $f$ einen geringstmöglichen Durchschnitt der Quadrate liefert. Dafür müssen schon einige Beispiele vorweggenommen werden. Nach einigen Versuchen stellten sich Werte von $f$ mit einem quadratischen oder sogar exponentiellen Zusammenhang als ungeeignet heraus, da sie $e$ oder $d$ zu stark gewichten. Daher werden im Folgenden nur Funktionen $f(e, d) = a \cdot e + b \cdot d$ betrachtet. Die Mittelwerte der Quadrate der Wartezeiten sind für Beispielwerte von $a$ und $b$ in Tabelle 1 aufgelistet.
 
 | $a, b$ | fahrradwerkstatt0.txt | fahrradwerkstatt1.txt | fahrradwerkstatt2.txt | fahrradwerkstatt3.txt | fahrradwerkstatt4.txt |
 | ------ | --------------------- | --------------------- | --------------------- | --------------------- | --------------------- |
@@ -73,7 +73,7 @@ Während des Testen erwiesen sich größere Werte von $b$ im Vergleich zu $a$ al
 
 _Tabelle 2: Mittelwert der prozentualen Unterschiede des Mittelwerts der Quadrate für verschiedene Werte von $a, b$ zu $a = 1, b = 0$._
 
-Man sieht, dass $a = 1, b = 0$ offensichtlich die schlechteste Strategie für diese Beispieleingaben ist. Ein größerer Wert für $b$ im Vergleich zu $a$ ist tendenziell besser, bei $a = 1, b = 42$ wird der geringste Mittelwert der Quadrate erzielt.
+Man sieht, dass $a = 1, b = 0$ offensichtlich die schlechteste Strategie für diese Beispieleingaben ist. Ein größerer Wert für $b$ im Vergleich zu $a$ ist tendenziell besser, bei $a = 1, b = 42$ wird der geringste Mittelwert der Quadrate erzielt. Die Kennzahl des Mittelwerts der Quadrate wird also durch vorgestelltes Verfahren mit $a = 1, b = 42$ deutlich geringer als durch die gegebenen Verfahren. Anzumerken ist, dass die Wahl $a = 1, b = 42$ sich für diese Beispieleingaben als geeignet herausgestellt hat. Bei anderen Beispielen könnten leicht andere Werte besser sein. Auch kann es sein, dass für diese Beipieleingaben noch bessere Werte als $a = 1, b = 42$ existieren, jedoch ist es nicht möglich, alle Kombinationen von $a$ und $b$ auszuprobieren.
 
 Die Abarbeitung der Aufträge geschieht ähnlich wie im Verfahren 'Kürzester Auftrag zuerst'. Nur werden die Aufträge in der Prioritätswarteschlange nicht nach Dauer geordnet, sondern nach aufsteigendem Wert für $f$.
 
@@ -381,6 +381,131 @@ Abschlusszeiten:
 Hier ergeben sich Unterschiede zwischen der ersten und zweiten Ausgabe. Der Fall $a = 1, b = 42$ verhält sich jedoch gleich zu $a = 0, b = 1$. Mithilfe von Abbildung 1 kann nachvollzogen werden, dass die Ausgabe in allen drei Fällen tatsächlich korrekt ist.
 
 ![](grafiken/fahrrad_beispiel_6.svg)
+
+### fahrradwerkstatt7.txt
+
+Dieses Beispiel soll zeigen, dass das Programm aufgrund der Laufzeit von $\Theta(n \log n)$ auch mit sehr großen Eingaben gut zurechtkommt. Es gilt $n = 10^5$, die Startzeiten wurden von einem Zahlengenerator gleichverteilt aus $[1, 10^5]$ ausgewählt. Die Dauer der Aufträge wurde gleichverteilt aus $[1, 2 \cdot 10^4]$ ausgewählt.
+
+```
+7056	3264
+20751	12051
+46550	5224
+38388	1866
+...
+8202	13542
+86238	4293
+36903	4866
+```
+
+Ausgabe für $a = 1, b = 0$.
+
+```
+Mittlere Wartezeit: 1.49773e+09
+Maximale Wartezeit: 2996082836
+Mittelwert der Quadrate: 2.99116e+18
+```
+
+Ausgabe für $a = 0, b = 1$.
+
+```
+Mittlere Wartezeit: 9.97704e+08
+Maximale Wartezeit: 2996151592
+Mittelwert der Quadrate: 1.79342e+18
+```
+
+Ausgabe für $a = 1, b = 42$.
+
+```
+Mittlere Wartezeit: 1.00108e+09
+Maximale Wartezeit: 2996083144
+Mittelwert der Quadrate: 1.8e+18
+```
+
+Ausgabe für $a = 1, b = 20$.
+
+```
+Mittlere Wartezeit: 1.01175e+09
+Maximale Wartezeit: 2996083144
+Mittelwert der Quadrate: 1.82029e+18
+```
+
+Ausgabe für $a = 1, b = 100$.
+
+```
+Mittlere Wartezeit: 9.98317e+08
+Maximale Wartezeit: 2996083144
+Mittelwert der Quadrate: 1.79463e+18
+```
+
+Ausgabe für $a = 1, b = 1000$.
+
+```
+Mittlere Wartezeit: 9.9771e+08
+Maximale Wartezeit: 2996083144
+Mittelwert der Quadrate: 1.79344e+18
+```
+
+In diesem Beispiel ist das selbst entwickelte Verfahren leicht schlechter als $a = 0, b = 1$. Mit den zusätzlichen Werten für $a = 1$ und $b = 20, 100, 1000$ scheint es, dass $a = 0, b = 1$ für dieses Beispiel optimal ist, und sich der Mittelwert der Quadrate mit größer werdendem $b$ asymptotisch dem für $a = 0, b = 1$ annähert.
+
+### fahrradwerkstatt8.txt
+
+Dieses Beispiel weist im Gegensatz zu _fahrradwerkstatt7.txt_ sehr ungleich verteilte Eingangszeiten auf.
+
+```
+90 434
+1002 67
+1443 793
+1444 8
+1454 73
+1590 893
+1733 84
+1909 1
+1902 1
+1902 1
+8444 14
+6783 38
+9090 123
+7239 773
+169 3
+1992 892
+1 2
+5 33
+3 3333
+4 901
+7 273
+3 99
+19002 82
+19002 773
+19000 636
+19622 182
+19623 181
+```
+
+Ausgabe für $a = 1, b = 0$.
+
+```
+Mittlere Wartezeit: 14594.1
+Maximale Wartezeit: 21799
+Mittelwert der Quadrate: 2.38262e+08
+```
+
+Ausgabe für $a = 0, b = 1$.
+
+```
+Mittlere Wartezeit: 4998.93
+Maximale Wartezeit: 26656
+Mittelwert der Quadrate: 6.31617e+07
+```
+
+Ausgabe für $a = 1, b = 42$.
+
+```
+Mittlere Wartezeit: 5055
+Maximale Wartezeit: 26656
+Mittelwert der Quadrate: 6.00065e+07
+```
+
+Hier gelingt es $a = 1, b = 42$, einen geringern Durchschnitt der Quadrate der Wartezeiten als die beiden gegebenen Verfahren zu erzielen. 
 
 ## Quellcode
 
