@@ -32,17 +32,20 @@ struct task_priority_comp
 
 void print_result(std::vector<task> const &tasks)
 {
-    long double mean_time = 0.0;
+    long double mean_time = 0.0, squares_mean = 0.0;
     int64_t max_time = 0;
     for (task const &t : tasks)
     {
         mean_time += (t.completion - t.start);
         max_time = std::max(max_time, t.completion - t.start);
+        squares_mean += (t.completion - t.start) * (t.completion - t.start);
     }
     mean_time /= (long double)tasks.size();
+    squares_mean /= (long double)tasks.size();
 
     std::cout << "Mittlere Wartezeit: " << mean_time << '\n'
-              << "Maximale Wartezeit: " << max_time << '\n';
+              << "Maximale Wartezeit: " << max_time << '\n'
+              << "Mittelwert der Quadrate: " << squares_mean << '\n';
 }
 
 inline int64_t minutes(int64_t hours)
