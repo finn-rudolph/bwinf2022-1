@@ -6,19 +6,19 @@
 
 struct task
 {
-    uint64_t start, len, completion;
+    int64_t start, len, completion;
     size_t i;
 };
 
-inline uint64_t priority(task const &t, uint64_t a, uint64_t b)
+inline int64_t priority(task const &t, int64_t a, int64_t b)
 {
     return a * t.start + b * t.len;
 }
 
 struct task_priority_comp
 {
-    uint64_t a, b;
-    task_priority_comp(uint64_t a_, uint64_t b_)
+    int64_t a, b;
+    task_priority_comp(int64_t a_, int64_t b_)
     {
         a = a_;
         b = b_;
@@ -26,47 +26,38 @@ struct task_priority_comp
 
     bool operator()(task const &x, task const &y) const
     {
-        return priority(x, a, b) > priority(y, a, b);
+        return priority(x, a, b) < priority(y, a, b);
     }
 };
 
-struct result
+void print_result(std::vector<task> const &tasks)
 {
-    long double mean_time;
-    uint64_t max_time;
-};
+    long double mean_time = 0.0;
+    int64_t max_time = 0;
+    for (task const &t : tasks)
+    {
+        mean_time += (t.completion - t.start);
+        max_time = std::max(max_time, t.completion - t.start);
+    }
+    mean_time /= (long double)tasks.size();
 
-void print_result(result const &res)
-{
-    std::cout << "Mittlere Wartezeit: " << res.mean_time << '\n'
-              << "Maximale Wartezeit: " << res.max_time << '\n';
+    std::cout << "Mittlere Wartezeit: " << mean_time << '\n'
+              << "Maximale Wartezeit: " << max_time << '\n';
 }
 
-inline uint64_t minutes(uint64_t hours)
+inline int64_t minutes(int64_t hours)
 {
     return hours * 60;
 }
 
-inline uint64_t day_start(uint64_t m)
+inline int64_t day_start(int64_t m)
 {
     return (m / minutes(24)) * minutes(24);
 }
 
-result calc_result(std::vector<task> const &tasks)
-{
-    result res = {0.0, 0};
-    for (task const &t : tasks)
-    {
-        res.mean_time += (t.completion - t.start);
-        res.max_time = std::max(res.max_time, t.completion - t.start);
-    }
-    res.mean_time /= (long double)tasks.size();
-    return res;
-}
-
 // Aktualisiert die Abschlusszeit des Auftrags und gibt die neue aktuelle Zeit
 // zurück.
-inline uint64_t do_task(task &t, uint64_t curr_time)
+inline int64_t do_task(task &t, int64_t curr_time)
 {
     // Fülle den aktuellen Arbeitstag auf, falls der Auftrag so lang ist.
     t.completion = std::min(curr_time + t.len, (day_start(curr_time) + minutes(17)));
@@ -80,9 +71,9 @@ inline uint64_t do_task(task &t, uint64_t curr_time)
     return t.completion;
 }
 
-inline uint64_t init_curr_time(task const &t)
+inline int64_t init_curr_time(task const &t)
 {
-    uint64_t curr_time = t.start;
+    int64_t curr_time = t.start;
 
     // Behandelt den Fall, dass ein Auftrag außerhalb der Arbeitszeit eingeht.
     if (curr_time % minutes(24) < minutes(9))
@@ -96,10 +87,10 @@ inline uint64_t init_curr_time(task const &t)
 void print_completion_times(std::vector<task> &tasks)
 {
     std::cout << "Abschlusszeiten:\n";
-    std::vector<uint64_t> times(tasks.size());
+    std::vector<int64_t> times(tasks.size());
     for (task const &t : tasks)
         times[t.i] = t.completion;
-    for (uint64_t c : times)
+    for (int64_t c : times)
         std::cout << c << ' ';
     std::cout << '\n';
 }
@@ -123,12 +114,12 @@ int main(int argc, char **argv)
     size_t z = 0;
     while (std::cin.peek() != EOF)
     {
-        uint64_t t, l;
+        int64_t t, l;
         std::cin >> t >> l;
         tasks.push_back({t, l, 0, z++});
     }
 
-    uint64_t a = 0, b = 0;
+    int64_t a = 0, b = 0;
     bool print_times = 0;
     for (int i = 1; i < argc; i++)
         if (!strcmp(argv[i], "-t"))
@@ -146,9 +137,9 @@ int main(int argc, char **argv)
     for (size_t i = 0; i < tasks.size(); i++)
         p[tasks[i].i] = i;
 
-    uint64_t curr_time = init_curr_time(tasks[0]);
-    std::priority_queue<task, std::vector<task>, decltype(task_priority_comp(a, b))>
-        q(task_priority_comp(a, b));
+    int64_t curr_time = init_curr_time(tasks[0]);
+    std::priority_queue<task, std::vector<task>, task_priority_comp>
+        q(task_priority_comp(-a, -b));
 
     auto it = tasks.begin();
     while (it != tasks.end() || !q.empty())
@@ -165,7 +156,7 @@ int main(int argc, char **argv)
         q.pop();
     }
 
-    print_result(calc_result(tasks));
+    print_result(tasks);
     if (print_times)
         print_completion_times(tasks);
 }
