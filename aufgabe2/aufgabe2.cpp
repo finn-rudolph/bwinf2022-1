@@ -6,6 +6,7 @@
 #include <climits>
 #include <vector>
 #include <set>
+#include <cmath>
 
 enum options
 {
@@ -50,7 +51,7 @@ struct event
     }
 };
 
-// Returns a random integer in [min, max)
+// Gibt eine zufällige Ganzzahl in [min, max) zurück.
 inline int rand_range(int min, int max)
 {
     return (std::rand() % (max - min)) + min;
@@ -77,14 +78,14 @@ std::vector<point> gen_points(size_t n, int width, int height)
 
 std::vector<vel> gen_velocities(size_t n)
 {
-    int const minv = 1, maxv = 10;
+    int const v_min = 1, v_max = 10;
     std::vector<vel> velocities(n);
     for (vel &v : velocities)
     {
-        v.n = rand_range(minv, maxv);
-        v.s = rand_range(minv, maxv);
-        v.o = rand_range(minv, maxv);
-        v.w = rand_range(minv, maxv);
+        v.n = rand_range(v_min, v_max);
+        v.s = rand_range(v_min, v_max);
+        v.o = rand_range(v_min, v_max);
+        v.w = rand_range(v_min, v_max);
     }
     return velocities;
 }
@@ -112,28 +113,18 @@ void update_queue(
     int a, int b, int x, int y, int u, int v, uint8_t c,
     double slope_down, double slope_up, int start_time, size_t i, bool west)
 {
-    // Falls sich der Kristall nach Norden / Süden ab einem y-Wert noch nicht
-    // auf der Geraden x = x_0 ausgebreitet hat und dort bereits ein anderer
-    // Kristall ist, kann er sich nicht weiter nach Norden / Süden ausbreiten.
-    for (int j = y; j <= b && j < height; j++)
-    {
-        if (diagram[x][j] != SIZE_MAX && diagram[x][j] != i && last[j] != -1)
-            while (j < height && last[j] != -1)
-                last[j++] = -1;
-    }
-    for (int j = y - 1; j >= a && j >= 0; j--)
-    {
-        if (diagram[x][j] != SIZE_MAX && diagram[x][j] != i && last[j] != -1)
-            while (j >= 0 && last[j] != -1)
-                last[j--] = -1;
-    }
-
     for (int j = std::max(0, a); j <= b && j < height; j++)
     {
-        int xend = x + u - (double)abs(j - y) * (j < y ? slope_down : slope_up);
+        double d = (double)abs(j - y) * (j < y ? slope_down : slope_up);
+        if (abs(d - std::round(d)) < 1e-6)
+            d = std::round(d);
+        else
+            d = std::ceil(d);
+
+        int xend = x + u - d;
         int xbegin = last[j];
 
-        if (xbegin < 0 || xbegin >= width)
+        if ((!west && xbegin >= width) || (west && xbegin < 0) || xbegin == INT_MIN)
             continue;
 
         if (west)
@@ -152,13 +143,13 @@ void update_queue(
             }
             else
             {
-                // Der Kristall ist gegen einen anderen gestoßen.
+                // Der Kristall ist seitlich gegen einen anderen gestoßen.
                 can_continue = 0;
                 break;
             }
         }
 
-        last[j] = can_continue ? (west ? xend - 1 : xend + 1) : -1;
+        last[j] = can_continue ? (west ? xend - 1 : xend + 1) : INT_MIN;
     }
 }
 
@@ -195,7 +186,7 @@ int main(int argc, char **argv)
 
     if (op & DIMENSIONS)
     {
-        std::cout << "Dimensionen [Breite Höhe]:\n";
+        std::cout << "Dimensionen des Bilds [Breite Höhe]:\n";
         std::cin >> width >> height;
         if (height > width)
             std::swap(height, width);
@@ -204,20 +195,20 @@ int main(int argc, char **argv)
     if (op & POINTS)
     {
         std::cout << "Koordinaten der Punkte [x y]:\n";
-        int max_x = 0, max_y = 0;
+        int x_max = 0, y_max = 0;
         for (size_t i = 0; i < n; i++)
         {
             int x, y;
             std::cin >> x >> y;
             points.push_back({x, y});
-            max_x = std::max(max_x, x);
-            max_y = std::max(max_y, y);
+            x_max = std::max(x_max, x);
+            y_max = std::max(y_max, y);
         }
 
         if (!(op & DIMENSIONS))
         {
-            width = max_x + 50;
-            height = max_y + 50;
+            width = x_max + 50;
+            height = y_max + 50;
         }
     }
     else
@@ -235,9 +226,9 @@ int main(int argc, char **argv)
         std::cout << "Geschwindigkeiten in Nord- / Süd- / Ost- / West-Richtung [N S O W]:\n";
         for (size_t i = 0; i < n; i++)
         {
-            int n, s, o, w;
-            std::cin >> n >> s >> o >> w;
-            velocities.push_back({n, s, o, w});
+            int v_n, v_s, v_o, v_w;
+            std::cin >> v_n >> v_s >> v_o >> v_w;
+            velocities.push_back({v_n, v_s, v_o, v_w});
         }
     }
     else
@@ -269,10 +260,10 @@ int main(int argc, char **argv)
     else
         colors = gen_colors(n);
 
-    // Das Ergebnisbild RGBA-Werten für jeden Pixel.
+    // Das Ergebnisbild mit RGBA-Werten für jeden Pixel.
     std::vector<uint8_t> res(width * height * 4, 0);
     // Der Index des Kristalls, dem der Pixel zugehörig ist (oder SIZE_MAX).
-    std::vector<std::vector<size_t>> diagram(width, std::vector<size_t>(height, -1));
+    std::vector<std::vector<size_t>> diagram(width, std::vector<size_t>(height, SIZE_MAX));
     // Enthält für jedes y den Punkt, der bei der Ausbreitung nach Ost bzw.
     // West zuletzt hinzugefügt wurde. Falls die Ausbreitung für ein y nicht
     // mehr möglich ist, steht an der Stelle -1.
@@ -303,16 +294,16 @@ int main(int argc, char **argv)
             if (times[i] < t)
             {
                 auto [x, y] = points[i];
-                int vn = velocities[i].n * (t - times[i]),
-                    vs = velocities[i].s * (t - times[i]),
-                    vo = velocities[i].o * (t - times[i]),
-                    vw = velocities[i].w * (t - times[i]);
+                int v_n = velocities[i].n * (t - times[i]),
+                    v_s = velocities[i].s * (t - times[i]),
+                    v_o = velocities[i].o * (t - times[i]),
+                    v_w = velocities[i].w * (t - times[i]);
 
                 update_queue(q, east[i], diagram, width, height,
-                             y - vs, y + vn, x, y, vo, velocities[i].o, colors[i],
+                             y - v_s, y + v_n, x, y, v_o, velocities[i].o, colors[i],
                              slopes[i].so, slopes[i].no, times[i], i, 0);
                 update_queue(q, west[i], diagram, width, height,
-                             y - vs, y + vn, x, y, vw, velocities[i].w, colors[i],
+                             y - v_s, y + v_n, x, y, v_w, velocities[i].w, colors[i],
                              slopes[i].sw, slopes[i].nw, times[i], i, 1);
             }
         }
