@@ -10,15 +10,25 @@ struct task
     size_t i;
 };
 
-inline bool task_earlier_start(task const &t1, task const &t2)
+inline uint64_t priority(task const &t, uint64_t a, uint64_t b)
 {
-    return t1.start < t2.start;
+    return a * t.start + b * t.len;
 }
 
-inline bool task_greater_len(task const &t1, task const &t2)
+struct task_priority_comp
 {
-    return t1.len > t2.len;
-}
+    uint64_t a, b;
+    task_priority_comp(uint64_t a_, uint64_t b_)
+    {
+        a = a_;
+        b = b_;
+    }
+
+    bool operator()(task const &x, task const &y) const
+    {
+        return priority(x, a, b) > priority(y, a, b);
+    }
+};
 
 struct result
 {
@@ -94,26 +104,42 @@ void print_completion_times(std::vector<task> &tasks)
     std::cout << '\n';
 }
 
-result in_order(std::vector<task> &tasks, bool print_times)
+inline void print_help()
 {
-    std::sort(tasks.begin(), tasks.end(), task_earlier_start);
-    uint64_t curr_time = init_curr_time(tasks[0]);
-
-    for (task &t : tasks)
-    {
-        // Wenn nötig, warte bis zum Beginn des nächsten Auftrags.
-        curr_time = std::max(curr_time, t.start);
-        curr_time = do_task(t, curr_time);
-    }
-
-    if (print_times)
-        print_completion_times(tasks);
-    return calc_result(tasks);
+    std::cout << "Gebrauch:\n"
+              << "  ./aufgabe4 [a] [b]\n"
+              << "  optional: -t zum Ausgeben der Abschlusszeiten\n";
 }
 
-result shortest_first(std::vector<task> &tasks, bool print_times)
+int main(int argc, char **argv)
 {
-    std::sort(tasks.begin(), tasks.end(), task_earlier_start);
+    if (argc != 3 && argc != 4)
+    {
+        print_help();
+        return 0;
+    }
+
+    std::vector<task> tasks;
+    size_t z = 0;
+    while (std::cin.peek() != EOF)
+    {
+        uint64_t t, l;
+        std::cin >> t >> l;
+        tasks.push_back({t, l, 0, z++});
+    }
+
+    uint64_t a = 0, b = 0;
+    bool print_times = 0;
+    for (int i = 1; i < argc; i++)
+        if (!strcmp(argv[i], "-t"))
+            print_times = 1;
+        else
+        {
+            a = std::stoul(argv[i]);
+            b = std::stoul(argv[++i]);
+        }
+
+    std::sort(tasks.begin(), tasks.end(), task_priority_comp(1, 0));
 
     // Die Permutation der Aufträge.
     std::vector<size_t> p(tasks.size());
@@ -121,8 +147,8 @@ result shortest_first(std::vector<task> &tasks, bool print_times)
         p[tasks[i].i] = i;
 
     uint64_t curr_time = init_curr_time(tasks[0]);
-    std::priority_queue<task, std::vector<task>, decltype(&task_greater_len)>
-        q(&task_greater_len);
+    std::priority_queue<task, std::vector<task>, decltype(task_priority_comp(a, b))>
+        q(task_priority_comp(a, b));
 
     auto it = tasks.begin();
     while (it != tasks.end() || !q.empty())
@@ -139,57 +165,7 @@ result shortest_first(std::vector<task> &tasks, bool print_times)
         q.pop();
     }
 
+    print_result(calc_result(tasks));
     if (print_times)
         print_completion_times(tasks);
-    return calc_result(tasks);
-}
-
-inline void print_help()
-{
-    std::cout << "Ein oder zwei Argumente erforderlich.\n"
-              << "Versionen:\n"
-              << "    Abarbeiten in der Eingangsordnung : v1\n"
-              << "    Kürzester Auftrag zuerst : v2\n"
-              << "Option:\n"
-              << "    Anzeigen der Abschlusszeiten aller Aufträge: -t\n";
-}
-
-int main(int argc, char **argv)
-{
-    if (argc != 2 && argc != 3)
-    {
-        print_help();
-        return 0;
-    }
-
-    std::vector<task> tasks;
-    size_t z = 0;
-    while (std::cin.peek() != EOF)
-    {
-        uint64_t t, l;
-        std::cin >> t >> l;
-        tasks.push_back({t, l, 0, z++});
-    }
-
-    unsigned v = 0;
-    bool print_times = 0;
-    for (int i = 1; i < argc; i++)
-        if (!strcmp(argv[i], "v1"))
-            v = 1;
-        else if (!strcmp(argv[i], "v2"))
-            v = 2;
-        else if (!strcmp(argv[i], "-t"))
-            print_times = 1;
-
-    switch (v)
-    {
-    case 1:
-        print_result(in_order(tasks, print_times));
-        break;
-    case 2:
-        print_result(shortest_first(tasks, print_times));
-        break;
-    default:
-        print_help();
-    }
 }
