@@ -10,6 +10,7 @@ struct task
     size_t i;
 };
 
+// Geringerer Wert bedeutet höhere Priorität.
 inline int64_t priority(task const &t, int64_t a, int64_t b)
 {
     return a * t.start + b * t.len;
@@ -67,10 +68,9 @@ inline int64_t do_task(task &t, int64_t curr_time)
     t.len -= (t.completion - curr_time);
 
     if (t.len)
-    {
         // Füge auch die Zeit der Nächte hinzu, die der Auftrag andauert.
         t.completion += (t.len / minutes(8) + 1) * minutes(16) + t.len;
-    }
+
     return t.completion;
 }
 
@@ -117,9 +117,9 @@ int main(int argc, char **argv)
     size_t z = 0;
     while (std::cin.peek() != EOF)
     {
-        int64_t t, l;
-        std::cin >> t >> l;
-        tasks.push_back({t, l, 0, z++});
+        int64_t start, len;
+        std::cin >> start >> len;
+        tasks.push_back({start, len, 0, z++});
     }
 
     int64_t a = 0, b = 0;
@@ -141,6 +141,8 @@ int main(int argc, char **argv)
         p[tasks[i].i] = i;
 
     int64_t curr_time = init_curr_time(tasks[0]);
+    // Die C++ std::priority_queue ordnet Elemente absteigend, daher müssen a
+    // und b negiert werden.
     std::priority_queue<task, std::vector<task>, task_priority_comp>
         q(task_priority_comp(-a, -b));
 
