@@ -63,7 +63,7 @@ inline int64_t day_start(int64_t m)
 // zurück.
 inline int64_t do_task(task &t, int64_t curr_time)
 {
-    // Fülle den aktuellen Arbeitstag auf, falls der Auftrag so lang ist.
+    // Fülle den aktuellen Arbeitstag auf, falls der Auftrag so lange dauert.
     t.completion = std::min(curr_time + t.len, (day_start(curr_time) + minutes(17)));
     t.len -= (t.completion - curr_time);
 
