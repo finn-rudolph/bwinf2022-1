@@ -20,7 +20,7 @@ ein _ _ tag
 
 Wenn Index $1$ (beginnend bei Index $0$) erreicht wird, kann gleich zu Index $3$ gesprungen werden. Bei größeren Lückensätzen kann das einen erheblichen Geschwindigkeitsvorteil bieten.
 
-### Laufzeitanalyse
+## Laufzeitanalyse
 
 Seien $n$ und $m$ wie oben definiert und $\rho$ die durchschnittliche Wortlänge. Es werden $\Theta(n)$ Vergleiche des Lückensatzes mit einem String an Wörtern durchgeführt (für jedes $i : 1 \le i < n - m)$. Jeder dieser Vergleiche benötigt $\Omega(1)$ und $O(m \cdot \rho)$ Zeit. Die untere Schranke von $\Omega(1)$ wird erreicht, wenn sich der erste Buchstabe des ersten Worts des Lückensatzes vom ersten Buchstaben des Worts bei $i$ unterscheidet. Dagegen benötigt das Feststellen einer vollständigen Übereinstimmung des Lückensatzes $O(m \cdot \rho)$ Zeit. Somit beträgt die Laufzeit des gesamten Programms $\Omega(n)$ und $O(n \cdot m \cdot \rho)$ Zeit.
 

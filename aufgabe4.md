@@ -321,7 +321,7 @@ Abschlusszeiten:
 595 2040 2080 2135 2225
 ```
 
-Ausgabe für $a = 1, b = 42$ `-t`.
+Ausgabe für $a = 1, b = 42$ mit `-t`.
 
 ```
 Mittlere Wartezeit: 1269
