@@ -1,10 +1,10 @@
 <h1 style="text-align: center;">Aufgabe 4: Fahrradwerkstatt</h1>
 
-<p style="text-align: center;">Team-ID: 00968</p>
+<p style="text-align: center;">Team-ID: 00988</p>
 
-<p style="text-align: center;">Finn Rudolph</p>
+<p style="text-align: center;">Team / Bearbeiter: Finn Rudolph</p>
 
-<p style="text-align: center;">25. September 2022</p>
+<p style="text-align: center;">19. November 2022</p>
 
 **Inhaltsverzeichnis**
 
@@ -14,7 +14,7 @@
 
 ### Abarbeiten der Aufträge in Reihenfolge
 
-Im Folgenden wird immer von Minuten als Zeiteinheit ausgegangen. Um die erste Teilaufgabe zu lösen, werden die Aufträge zunächst nach Eingangszeit sortiert. Das ist nötig, da von der Aufgabestellung eine aufsteigend sortierte Reihenfolge der Aufträge nicht garantiert ist. Anschließend können sie der Reihe nach abgearbeitet werden. Währenddessen soll ständig der aktuelle Zeitpunkt in einer Variablen aktualisiert werden, und für jeden Auftrag sein Zeitpunkt des Abschlusses abgespeichert werden. Damit kann später die mittlere und maximale Wartezeit berechnet werden. Zu Beginn wird der aktuelle Zeitpunkt auf den Eingangszeitpunkt des ersten Auftrags gesetzt. Falls dieser außerhalb von Marcs Arbeitszeiten liegt, wird der aktuelle Zeitpunkt auf den nächsten Beginn eines Arbeitstags gesetzt.
+Im Folgenden wird immer von Minuten als Zeiteinheit ausgegangen. Um die erste Teilaufgabe zu lösen, werden die Aufträge zunächst nach Eingangszeit sortiert. Anschließend können sie der Reihe nach abgearbeitet werden. Währenddessen soll ständig der aktuelle Zeitpunkt in einer Variablen aktualisiert werden, und für jeden Auftrag sein Zeitpunkt des Abschlusses abgespeichert werden. Damit kann später die mittlere und maximale Wartezeit berechnet werden. Zu Beginn wird der aktuelle Zeitpunkt auf den Eingangszeitpunkt des ersten Auftrags gesetzt. Falls dieser außerhalb von Marcs Arbeitszeiten liegt, wird der aktuelle Zeitpunkt auf den nächsten Beginn eines Arbeitstags gesetzt.
 
 Bevor die Abarbeitung eines Auftrags beginnt, muss Folgendes beachtet werden. Falls die aktuelle Zeit vor dem Beginn des abzuarbeitenden Auftrags liegt, muss sie auf dessen Eingangszeit gesetzt werden. Das entspricht dem Fall, das Marc eine Zeit lang keine Aufträge hatte, da der Abschlusszeitpunkt des letzten Auftrags vor dem Eingangszeitpunkt des aktuellen Auftrags liegt. Beim Abarbeiten eines Auftrags muss berücksichtigt werden, dass er möglicherweise nicht in einen Tag passt und seine Wartezeit so die Nacht mit einschließt. Deshalb wird zunächst geprüft, ob der Auftrag noch im aktuellen Tag abschließbar ist. Wenn das möglich ist, kann einfach die aktuelle Zeit um die Dauer des Auftrags erhöht werden. Andernfalls wird die Dauer des Auftrags um die übrige Zeit bis 17 Uhr des aktuellen Tages reduziert. Dadurch kann der Auftrag so behandelt werden, als würde er direkt am Anfang des nächsten Arbeitstags um 9 Uhr starten. Der Zeitpunkt seines Abschlusses $t_{\text{Abschluss}}$ kann nun wie folgt berechnet werden (_Restdauer_ ist nur die übrige Dauer nach der eben beschriebenen Subtraktion, _Gesamtdauer_ die ursprüngliche Dauer):
 $$
@@ -73,7 +73,7 @@ Während des Testen erwiesen sich größere Werte von $b$ im Vergleich zu $a$ al
 
 _Tabelle 2: Mittelwert der prozentualen Unterschiede des Mittelwerts der Quadrate für verschiedene Werte von $a, b$ zu $a = 1, b = 0$._
 
-Man sieht, dass $a = 1, b = 0$ offensichtlich die schlechteste Strategie unter den gewählten für diese Beispieleingaben ist. Ein größerer Wert für $b$ im Vergleich zu $a$ ist tendenziell besser, bei $a = 1, b = 42$ wird der geringste Mittelwert der Quadrate erzielt. Die Kennzahl des Mittelwerts der Quadrate wird also durch vorgestelltes Verfahren mit $a = 1, b = 42$ deutlich geringer als durch die gegebenen Verfahren. Anzumerken ist, dass die Wahl $a = 1, b = 42$ sich für diese Beispieleingaben als geeignet herausgestellt hat. Bei anderen Beispielen könnten leicht andere Werte besser sein. Auch kann es sein, dass für diese Beipieleingaben noch bessere Werte als $a = 1, b = 42$ existieren, jedoch ist es nicht möglich, alle Kombinationen von $a$ und $b$ auszuprobieren.
+Man sieht, dass $a = 1, b = 0$ offensichtlich die schlechteste Strategie unter den gewählten für diese Beispieleingaben ist. Ein größerer Wert für $b$ im Vergleich zu $a$ ist tendenziell besser, bei $a = 1, b = 42$ wird der geringste Mittelwert der Quadrate erzielt. Die Kennzahl des Mittelwerts der Quadrate wird also durch vorgestelltes Verfahren mit $a = 1, b = 42$ deutlich geringer als durch die gegebenen Verfahren. Anzumerken ist, dass die Wahl $a = 1, b = 42$ sich für diese Beispieleingaben als geeignet herausgestellt hat. Bei anderen Beispielen könnten leicht andere Werte besser sein. Auch kann es sein, dass für diese Beipieleingaben noch bessere Werte als $a = 1, b = 42$ existieren, jedoch ist es praktisch nicht möglich, alle Kombinationen von $a$ und $b$ auszuprobieren.
 
 Die Abarbeitung der Aufträge geschieht ähnlich wie im Verfahren 'Kürzester Auftrag zuerst'. Nur werden die Aufträge in der Prioritätswarteschlange nicht nach Dauer geordnet, sondern nach aufsteigendem Wert für $f$.
 
@@ -85,7 +85,7 @@ Die Speicherkomplexität beträgt $\Theta(n)$, da für jeden Auftrag nur eine ko
 
 ## Implementierung
 
-Das Programm wird in C++ geschrieben und für Linux x86-64 kompiliert. Da die vorgegebenen Verfahren nur Spezialfälle von dem selbst entwickelten sind, wird im Sinne der Vermeidung von Codewiederholung nur letzteres implementiert. Über zwei Argumente in der Kommandozeile können $a$ und $b$ angegeben werden. Auch kann das Argument `-t` mitgegeben werden, um neben den drei Kennzahlen der Wartezeiten auch die Abschlusszeit jedes Auftrags ausgeben zu lassen. Wichtig ist jedoch, dass die Werte von $a$ und $b$ direkt aufeinander folgen und $a$ vor $b$ angegeben wird. Der Befehl zum Ausführen des Programms könnte mit $a = 1, b = 42$ wie folgt aussehen.
+Das Programm wird in C++ geschrieben. Da die vorgegebenen Verfahren nur Spezialfälle von dem selbst entwickelten sind, wird im Sinne der Vermeidung von Codewiederholung nur letzteres implementiert. Über zwei Argumente in der Kommandozeile können $a$ und $b$ angegeben werden. Auch kann das Argument _-t_ mitgegeben werden, um neben den drei Kennzahlen der Wartezeiten auch die Abschlusszeit jedes Auftrags ausgeben zu lassen. Wichtig ist jedoch, dass die Werte von $a$ und $b$ direkt aufeinander folgen und $a$ vor $b$ angegeben wird. Der Befehl zum Ausführen des Programms könnte mit $a = 1, b = 42$ wie folgt aussehen.
 
 ```
 ./aufgabe4 < beispiele/fahrradwerkstatt0.txt 1 42 -t
@@ -93,13 +93,13 @@ Das Programm wird in C++ geschrieben und für Linux x86-64 kompiliert. Da die vo
 
 Die vorgegebenen Verfahren können, wie bereits erklärt, mit $a = 1, b = 0$ für das Abarbeiten der Aufträge in Reihenfolge und $a = 0, b = 1$ für die Priorisierung des aktuell kürzesten Auftrags erreicht werden.
 
-Zunächst werden in `main` die Aufträge eingelesen und dem Vektor `tasks` hinzugefügt (Z. 116-123). Danach werden die Argumente der Kommandozeile verarbeitet und Werte für $a$ und $b$ gesetzt (Z. 125-134).
+Zunächst werden in _main_ die Aufträge eingelesen und dem Vektor _tasks_ hinzugefügt (Z. 117-124). Danach werden die Argumente der Kommandozeile verarbeitet und Werte für $a$ und $b$ gesetzt (Z. 126-135).
 
-Anschließend werden die Aufträge mithilfe von `std::sort` nach aufsteigender Eingangszeit sortiert (Z. 136). Hierfür wird als Vergleichsfunktion eine Instanz der Struktur `task_priority_comp` verwendet - diese Struktur dient dazu, eine Vergleichsfunktion für verschiedene Werte von $a$ und $b$ erhalten zu können. Da die Aufträge zunächst nach Eingangszeit sortiert werden, ist $a = 1, b = 0$. Durch Überladen des Operators `()` kann die Struktur als Vergleichsfunktion für `std::sort` mitgegeben werden. Anschließend wird die durch das Sortieren erzeugte Permutation der Aufträge in einem Vektor abgespeichert, die später benötigt wird (Z. 139-141). Die aktuelle Zeit `curr_time` wird durch die Funktion `init_curr_time`, wie in der Lösungsidee beschrieben, entweder auf den Startzeitpunkt des ersten Auftrags oder den nächsten Arbeitstag gesetzt (Z. 143). Hierfür sind einige weitere Hilfsfunktionen nötig, die auch später gebraucht werden: `minutes` gibt die Anzahl an Minuten der als Argument gegebenen Stunden zurück, `day_start` berechnet den Startzeitpunkt des aktuellen Tages in Minuten.
+Anschließend werden die Aufträge mithilfe von _std::sort_ nach aufsteigender Eingangszeit sortiert (Z. 137). Hierfür wird als Vergleichsfunktion eine Instanz der Struktur _task_priority_comp_ verwendet - diese Struktur dient dazu, eine Vergleichsfunktion für verschiedene Werte von $a$ und $b$ erhalten zu können. Da die Aufträge zunächst nach Eingangszeit sortiert werden, ist $a = 1, b = 0$. Durch Überladen des Operators _()_ kann die Struktur als Vergleichsfunktion für _std::sort_ mitgegeben werden. Anschließend wird die durch das Sortieren erzeugte Permutation der Aufträge in einem Vektor abgespeichert, die später benötigt wird (Z. 140-142). Die aktuelle Zeit _curr_time_ wird durch die Funktion _init_curr_time_, wie in der Lösungsidee beschrieben, entweder auf den Startzeitpunkt des ersten Auftrags oder den nächsten Arbeitstag gesetzt (Z. 144). Hierfür sind einige weitere Hilfsfunktionen nötig, die auch später gebraucht werden: _minutes_ gibt die Anzahl an Minuten der als Argument gegebenen Stunden zurück, _day_start_ berechnet den Startzeitpunkt des aktuellen Tages in Minuten.
 
-Nach Anlegen der Prioritätswarteschlange `q` (Z. 144-147) beginnt der eigentliche Algorithmus. Der Iterator `it` zeigt immer zu dem Auftrag in `tasks`, der als nächstes eingehen wird. Die äußere `while`-Schleife wird solange ausgeführt, bis alle Aufträge abgearbeitet sind, denn wenn `it != tasks.end()` oder `!q.empty()` sind noch unbearbeitet Aufträge in `tasks ` oder der Warteschlange. Die Zeilen 152-153 behandeln den Fall, dass Marc eine Zeit warten muss, da sein letzter Auftrag vor dem Beginn des aktuellen fertiggestellt wurde. Anschließend werden alle bereits eingegangenen Aufträge zur Prioritätswarteschlange hinzugefügt (Z. 154-158). Hierbei muss auf den Fall geachtet werden, dass bereits alle Aufträge eingegangen sind und `it` deshalb bei `tasks.end()` steht. Dann kann das Hinzufügen sofort beendet werden. Als letzter Schritt wird der Auftrag mit aktuell höchster Priorität der Warteschlange entnommen und von der Funktion `do_task` abgearbeitet. Wichtig ist, das nur der oberste Auftrag und nicht die gesamte Warteschlange abgearbeitet wird, denn durch das Vergrößern von `curr_time` nach Abarbeiten eines Auftrags könnten bereits neue Aufträge eingegangen sein.
+Nach Anlegen der Prioritätswarteschlange _q_ (Z. 145-148) beginnt der eigentliche Algorithmus. Der Iterator _it_ zeigt immer zu dem Auftrag in _tasks_, der als nächstes eingehen wird. Die äußere while-Schleife wird solange ausgeführt, bis alle Aufträge abgearbeitet sind, denn wenn _it != tasks.end()_ oder _!q.empty()_ sind noch unbearbeitet Aufträge in _tasks_ oder der Warteschlange. Die Zeilen 153-154 behandeln den Fall, dass Marc eine Zeit warten muss, da sein letzter Auftrag vor dem Beginn des aktuellen fertiggestellt wurde. Anschließend werden alle bereits eingegangenen Aufträge zur Prioritätswarteschlange hinzugefügt (Z. 155-159). Hierbei muss auf den Fall geachtet werden, dass bereits alle Aufträge eingegangen sind und _it_ deshalb bei _tasks.end()_ steht. Dann kann das Hinzufügen sofort beendet werden. Als letzter Schritt wird der Auftrag mit aktuell höchster Priorität der Warteschlange entnommen und von der Funktion _do_task_ abgearbeitet. Wichtig ist, das nur der oberste Auftrag und nicht die gesamte Warteschlange abgearbeitet wird, denn durch das Vergrößern von _curr_time_ nach Abarbeiten eines Auftrags könnten bereits neue Aufträge eingegangen sein.
 
-`do_tasks` arbeitet einen Auftrag nach dem zweischrittigen Verfahren ab, das in der Lösungsidee beschrieben wurde (Z. 62-75). Zunächst wird die Abschlusszeit des Auftrags auf das Minimum der Dauer des Auftrags und der übrigen Zeit des Arbeitstags gesetzt, und die Dauer des Auftrags um die Zeit reduziert, die am aktuellen Tag abgearbeitet werden kann (Z. 67-68). Falls der Auftrag in den aktuellen Tag passt, ist `t.len` gleich 0 und Z. 72 wird nicht ausgeführt. Andernfalls wird die Abschlusszeit nach der in der Lösungsidee genannten Formel vergrößert. Schließlich wird die neue aktuelle Zeit zurückgegeben.
+_do_tasks_ arbeitet einen Auftrag nach dem zweischrittigen Verfahren ab, das in der Lösungsidee beschrieben wurde (Z. 62-76). Zunächst wird die Abschlusszeit des Auftrags auf das Minimum der Dauer des Auftrags und der übrigen Zeit des Arbeitstags gesetzt, und die Dauer des Auftrags um die Zeit reduziert, die am aktuellen Tag abgearbeitet werden kann (Z. 67-69). Falls der Auftrag in den aktuellen Tag passt, ist _t.len_ gleich 0 und Z. 73 wird nicht ausgeführt. Andernfalls wird die Abschlusszeit nach der in der Lösungsidee genannten Formel vergrößert. Schließlich wird die neue aktuelle Zeit zurückgegeben.
 
 ## Beispiele
 
@@ -301,7 +301,7 @@ Dieses sehr kleine Beispiel dient dazu, die Korrektheit manuell genau überprüf
 720 90
 ```
 
-Ausgabe für $a = 1, b = 0$ mit `-t`.
+Ausgabe für $a = 1, b = 0$ mit _-t_.
 
 ```
 Mittlere Wartezeit: 1269
@@ -311,7 +311,7 @@ Abschlusszeiten:
 595 2040 2080 2135 2225
 ```
 
-Ausgabe für $a = 0, b = 1$ mit `-t`.
+Ausgabe für $a = 0, b = 1$ mit _-t_.
 
 ```
 Mittlere Wartezeit: 1269
@@ -321,7 +321,7 @@ Abschlusszeiten:
 595 2040 2080 2135 2225
 ```
 
-Ausgabe für $a = 1, b = 42$ mit `-t`.
+Ausgabe für $a = 1, b = 42$ mit _-t_.
 
 ```
 Mittlere Wartezeit: 1269
@@ -348,7 +348,7 @@ Auch anhand von diesem kleinen Beispiel soll die Korrektheit des Programms über
 321 99
 ```
 
-Ausgabe für $a = 1, b = 0$ mit `-t`.
+Ausgabe für $a = 1, b = 0$ mit _-t_.
 
 ```
 Mittlere Wartezeit: 3036.38
@@ -358,7 +358,7 @@ Abschlusszeiten:
 2400 806 6697 618 6480 6483 6577 717 
 ```
 
-Ausgabe für $a = 0, b = 1$ mit `-t`.
+Ausgabe für $a = 0, b = 1$ mit _-t_.
 
 ```
 Mittlere Wartezeit: 1772.25
@@ -368,7 +368,7 @@ Abschlusszeiten:
 2400 707 3577 618 6697 2403 3457 806 
 ```
 
-Ausgabe für $a = 1, b = 42$ mit `-t`.
+Ausgabe für $a = 1, b = 42$ mit _-t_.
 
 ```
 Mittlere Wartezeit: 1772.25
@@ -382,9 +382,11 @@ Hier ergeben sich Unterschiede zwischen der ersten und zweiten Ausgabe. Der Fall
 
 ![](grafiken/fahrrad_beispiel_6.svg)
 
+_Abbildung 1: Zeichnung zur Veranschaulichung von fahrradwerkstatt6.txt_
+
 ### fahrradwerkstatt7.txt
 
-Dieses Beispiel soll zeigen, dass das Programm aufgrund der Laufzeit von $\Theta(n \log n)$ auch mit sehr großen Eingaben gut zurechtkommt. Es gilt $n = 10^5$, die Startzeiten wurden von einem Zahlengenerator gleichverteilt aus $[1, 10^5]$ ausgewählt. Die Dauer der Aufträge wurde gleichverteilt aus $[1, 2 \cdot 10^4]$ ausgewählt.
+Dieses Beispiel soll zeigen, dass das Programm aufgrund der Laufzeit von $\Theta(n \log n)$ auch mit sehr großen Eingaben gut zurechtkommt. Es gilt $n = 10^5$, die Startzeiten wurden von einem Zahlengenerator gleichverteilt aus $[1; 10^5]$ ausgewählt. Die Dauer der Aufträge wurde gleichverteilt aus $[1; 2 \cdot 10^4]$ ausgewählt.
 
 ```
 7056	3264
@@ -576,7 +578,8 @@ inline int64_t day_start(int64_t m)
 inline int64_t do_task(task &t, int64_t curr_time)
 {
     // Fülle den aktuellen Arbeitstag auf, falls der Auftrag so lange dauert.
-    t.completion = std::min(curr_time + t.len, (day_start(curr_time) + minutes(17)));
+    t.completion =
+        std::min(curr_time + t.len, (day_start(curr_time) + minutes(17)));
     t.len -= (t.completion - curr_time);
 
     if (t.len)

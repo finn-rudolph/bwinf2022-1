@@ -124,14 +124,17 @@ void update_queue(
         int xend = x + u - d;
         int xbegin = last[j];
 
-        if ((!west && xbegin >= width) || (west && xbegin < 0) || xbegin == INT_MIN)
+        if ((!west && xbegin >= width) || (west && xbegin < 0) ||
+            xbegin == INT_MIN)
             continue;
 
         if (west)
             xend = 2 * x - xend;
 
         bool can_continue = 1;
-        for (int k = xbegin; (west ? k >= xend : k <= xend) && k < width && k >= 0; k += (west ? -1 : 1))
+        for (int k = xbegin;
+             (west ? k >= xend : k <= xend) && k < width && k >= 0;
+             k += (west ? -1 : 1))
         {
             if (diagram[k][j] == SIZE_MAX)
             {
@@ -223,7 +226,8 @@ int main(int argc, char **argv)
 
     if (op & VELOCITY)
     {
-        std::cout << "Geschwindigkeiten in Nord- / Süd- / Ost- / West-Richtung [N S O W]:\n";
+        std::cout << "Geschwindigkeiten in Nord- / Süd- / Ost- / West-Richtung "
+                     "[N S O W]:\n";
         for (size_t i = 0; i < n; i++)
         {
             int v_n, v_s, v_o, v_w;
@@ -263,7 +267,8 @@ int main(int argc, char **argv)
     // Das Ergebnisbild mit RGBA-Werten für jeden Pixel.
     std::vector<uint8_t> res(width * height * 4, 0);
     // Der Index des Kristalls, dem der Pixel zugehörig ist (oder SIZE_MAX).
-    std::vector<std::vector<size_t>> diagram(width, std::vector<size_t>(height, SIZE_MAX));
+    std::vector<std::vector<size_t>>
+        diagram(width, std::vector<size_t>(height, SIZE_MAX));
     // Enthält für jedes y den Punkt, der bei der Ausbreitung nach Ost bzw.
     // West zuletzt hinzugefügt wurde. Falls die Ausbreitung für ein y nicht
     // mehr möglich ist, steht an der Stelle -1.
@@ -300,11 +305,13 @@ int main(int argc, char **argv)
                     v_w = velocities[i].w * (t - times[i]);
 
                 update_queue(q, east[i], diagram, width, height,
-                             y - v_s, y + v_n, x, y, v_o, velocities[i].o, colors[i],
-                             slopes[i].so, slopes[i].no, times[i], i, 0);
+                             y - v_s, y + v_n, x, y, v_o, velocities[i].o,
+                             colors[i], slopes[i].so, slopes[i].no, times[i],
+                             i, 0);
                 update_queue(q, west[i], diagram, width, height,
-                             y - v_s, y + v_n, x, y, v_w, velocities[i].w, colors[i],
-                             slopes[i].sw, slopes[i].nw, times[i], i, 1);
+                             y - v_s, y + v_n, x, y, v_w, velocities[i].w,
+                             colors[i], slopes[i].sw, slopes[i].nw, times[i],
+                             i, 1);
             }
         }
 

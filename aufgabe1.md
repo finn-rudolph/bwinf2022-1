@@ -1,10 +1,10 @@
 <h1 style="text-align: center;">Aufgabe 1: Störung</h1>
 
-<p style="text-align: center;">Team-ID: 00968</p>
+<p style="text-align: center;">Team-ID: 00988</p>
 
-<p style="text-align: center;">Finn Rudolph</p>
+<p style="text-align: center;">Team / Bearbeiter: Finn Rudolph</p>
 
-<p style="text-align: center;">25. September 2022</p>
+<p style="text-align: center;">19. November 2022</p>
 
 **Inhaltsverzeichnis**
 
@@ -12,7 +12,7 @@
 
 ## Lösungsidee
 
-Das Problem wird durch Durchsuchen des großen Texts nach Vorkommnissen des Lückensatzes gelöst. Um das zu erleichtern, soll der Text in einem Vorverarbeitungsschritt in Wörter aufgespalten werden. So muss sich während der Suche nicht um Satz- oder Leerzeichen gekümmert werden. Auch der Lückensatz wird derartig zerlegt. Im Folgenden sei $n$ die Anzahl an Wörtern im großen Text und $m$ die Anzahl an Wörtern oder Lücken im Lückensatz. Mithilfe der Vorverarbeitung muss nur noch überprüft werden, ob für ein $i : 0 \le i < n - m$ gilt, dass alle Wörter im Intervall $[i, i + m)$ im großen Text gleich den Wörtern im Lückensatz sind. Falls das Wort im Lückensatz eine Lücke ist, wird der Vergleich übersprungen. Außerdem können an Stellen mehrerer aufeinanderfolgender Lücken sofort alle gemeinsam übersprungen werden. Ein Beispiel für solch einen Fall ist `stoerung4.txt`:
+Das Problem wird durch Durchsuchen des großen Texts nach Vorkommnissen des Lückensatzes gelöst. Um das zu erleichtern, soll der Text in einem Vorverarbeitungsschritt in Wörter aufgespalten werden. So muss sich während der Suche nicht um Satz- oder Leerzeichen gekümmert werden. Auch der Lückensatz wird derartig zerlegt. Im Folgenden sei $n$ die Anzahl an Wörtern im großen Text und $m$ die Anzahl an Wörtern oder Lücken im Lückensatz. Mithilfe der Vorverarbeitung muss nur noch überprüft werden, ob für ein $i : 0 \le i < n - m$ gilt, dass alle Wörter im Intervall $[i, i + m)$ im großen Text gleich den Wörtern im Lückensatz sind. Falls das Wort im Lückensatz eine Lücke ist, wird der Vergleich übersprungen. Außerdem können an Stellen mehrerer aufeinanderfolgender Lücken sofort alle gemeinsam übersprungen werden. Ein Beispiel für solch einen Fall ist _stoerung4.txt_:
 
 ```
 ein _ _ tag
@@ -22,7 +22,7 @@ Wenn Index $1$ (beginnend bei Index $0$) erreicht wird, kann gleich zu Index $3$
 
 ## Laufzeitanalyse
 
-Seien $n$ und $m$ wie oben definiert und $\rho$ die durchschnittliche Wortlänge. Es werden $\Theta(n)$ Vergleiche des Lückensatzes mit einem String an Wörtern durchgeführt (für jedes $i : 1 \le i < n - m)$. Jeder dieser Vergleiche benötigt $\Omega(1)$ und $O(m \cdot \rho)$ Zeit. Die untere Schranke von $\Omega(1)$ wird erreicht, wenn sich der erste Buchstabe des ersten Worts des Lückensatzes vom ersten Buchstaben des Worts bei $i$ unterscheidet. Dagegen benötigt das Feststellen einer vollständigen Übereinstimmung des Lückensatzes $O(m \cdot \rho)$ Zeit. Somit beträgt die Laufzeit des gesamten Programms $\Omega(n)$ und $O(n \cdot m \cdot \rho)$ Zeit.
+Seien $n$ und $m$ wie oben definiert und $\rho$ die durchschnittliche Wortlänge. Im Folgenden wird angenommen, dass die maximale Wortlänge innerhalb eines konstanten Faktors der durchschnittlichen Wortlänge liegt. Es werden $\Theta(n)$ Vergleiche des Lückensatzes mit einem String an Wörtern durchgeführt (für jedes $i : 1 \le i < n - m)$. Jeder dieser Vergleiche benötigt $\Omega(1)$ und $O(m \cdot \rho)$ Zeit. Die untere Schranke von $\Omega(1)$ wird erreicht, wenn sich der erste Buchstabe des ersten Worts des Lückensatzes vom ersten Buchstaben des Worts bei $i$ unterscheidet. Dagegen benötigt das Feststellen einer vollständigen Übereinstimmung des Lückensatzes $O(m \cdot \rho)$ Zeit. Somit beträgt die Laufzeit des gesamten Programms $\Omega(n)$ und $O(n \cdot m \cdot \rho)$ Zeit.
 
 Die Speicherkomplexität beträgt $\Theta(\rho (n  + m))$, da jeder der beiden Texte in einem Format abgespeichert wird, dessen Größe sich nur um einen konstanten Faktor vom Originaltext unterscheidet.
 
@@ -30,19 +30,19 @@ Anmerkung: Mit Hashing könnte man den Faktor $\rho$ aus der Laufzeit eliminiere
 
 ## Implementierung
 
-Der Algorithmus wird in C++ implementiert, das Programm kann auf Linux x86-64 Systemen ausgeführt werden. Die Implementierung ist in drei Teile gegliedert: Im ersten Teil (Z. 90-109 in `main`) werden der große Text und der Lückensatz eingelesen und in Wörter zerteilt. Der zweite Teil (Z. 111-143 in `main`) ist die eigentliche Suche nach Übereinstimmungen. Zuletzt werden die Ergebnisse der Suche ausgegeben (Z. 145-156 in `main`). Der große Text, in dem gesucht werden soll, ist standardmäßig `alice.txt`, kann aber als Argument in der Kommandozeile angegeben werden (Z. 97-99).
+Der Algorithmus wird in C++ implementiert, das Programm kann auf Linux x86-64 Systemen ausgeführt werden. Zum Kompilieren kann in der Kommandozeile im Ordner von Aufgabe 1 einfach _make aufgabe1_ eingegeben werden. Das Programm liest die Eingabe aus der Standardeingabe. Die Implementierung ist in drei Teile gegliedert: Im ersten Teil (Z. 90-109 in _main_) werden der große Text und der Lückensatz eingelesen und in Wörter zerteilt. Der zweite Teil (Z. 111-143 in _main_) ist die eigentliche Suche nach Übereinstimmungen. Zuletzt werden die Ergebnisse der Suche ausgegeben (Z. 145-156 in _main_). Der große Text, in dem gesucht werden soll, ist standardmäßig _alice.txt_, kann aber als Argument in der Kommandozeile angegeben werden (Z. 97-99).
 
-Das Einlesen des großen Texts übernimmt die Funktion `read_text`. Sie wandelt den Text in einen Vektor von Wörtern um, wobei ein Wort als Struktur `word` gespeichert wird. In diesem wird zu jedem Wort seine Zeile und Stelle in der Zeile abgespeichert, um bei der späteren Ausgabe von gefundenen Übereinstimmungen präzise Angaben machen zu können. Noch eine Anmerkung zur Klassifizierung nach Satzzeichen, Anführungszeichen und Wort: Normale Satzzeichen wie `.` oder `,` werden durch `is_punctuation` durch einen simplen Vergleich erkannt. Das Anführungszeichen » oder « zu erkennen ist allerdings etwas schwieriger, da es nach UTF-8-Codierung zwei Bytes einnimmt. Gelöst wird dieses Problem durch die Funktion `is_quotation`, die zwei aufeinanderfolgende Bytes auf eine Übereinstimmung mit dem UTF-8-Code von » oder « überprüft. Nun zur Umwandlung des Texts: Für jede Ausführung der äußeren while-Schleife (Z. 50) wird eine Zeile eingelesen und verarbeitet. Für jede Zeile, gespeichert in `line`, iteriert der Iterator `it` mithilfe der zweitinnersten while-Schleife über alle ihre Zeichen (Z. 55-80). In jeder Iteration dieser while-Schleife wird zunächst ein Wort eingelesen (Z. 59-67) und anschließend ihm folgende Satz- und Leerzeichen übersprungen. Um das Ende des Worts zu erkennen, wird die Funktion `is_word` (Z. 21-25) verwendet, die `1` zurückgibt, wenn der gegebene Iterator weder zu einem Satzzeichen, noch zu einem Anführungszeichen oder Leerraum zeigt. Beim Überspringen von Satzzeichen (Z. 72-82) muss wieder darauf geachtet werden, dass Anführungszeichen zwei Bytes einnehmen.
+Das Einlesen des großen Texts übernimmt die Funktion _read_text_. Sie wandelt den Text in einen Vektor von Wörtern um, wobei ein Wort als Struktur _word_ gespeichert wird. In diesem wird zu jedem Wort seine Zeile _l_ und Stelle _w_ in der Zeile abgespeichert, um bei der späteren Ausgabe von gefundenen Übereinstimmungen präzise Angaben machen zu können. Noch eine Anmerkung zur Klassifizierung nach Satzzeichen, Anführungszeichen und Wort: Normale Satzzeichen wie _._ oder _,_ werden durch _is_punctuation_ durch einen simplen Vergleich erkannt. Das Anführungszeichen » oder « zu erkennen ist allerdings etwas schwieriger, da es nach UTF-8-Codierung zwei Bytes einnimmt. Gelöst wird dieses Problem durch die Funktion _is_quotation_, die zwei aufeinanderfolgende Bytes auf eine Übereinstimmung mit dem UTF-8-Code von » oder « überprüft. Nun zur Umwandlung des Texts: Für jede Ausführung der äußeren while-Schleife (Z. 50) wird eine Zeile eingelesen und verarbeitet. Für jede Zeile, gespeichert in _line_, iteriert der Iterator _it_ mithilfe der zweitinnersten while-Schleife über alle ihre Zeichen (Z. 55-80). In jeder Iteration dieser while-Schleife wird zunächst ein Wort eingelesen (Z. 59-67) und anschließend ihm folgende Satz- und Leerzeichen übersprungen. Um das Ende des Worts zu erkennen, wird die Funktion _is_word_ (Z. 21-25) verwendet, die 1 zurückgibt, wenn der gegebene Iterator weder zu einem Satzzeichen, noch zu einem Anführungszeichen oder Leerraum zeigt. Beim Überspringen von Satzzeichen (Z. 72-82) muss wieder darauf geachtet werden, dass Anführungszeichen zwei Bytes einnehmen.
 
-Das Einlesen des Lückensatzes (Z. 104-116) geschieht durch eine for-Schleife, in der alle eingelesenen Wörter in eine Struktur `pattern_elem` umgewandelt werden und dem Vektor `pattern` hinzugefügt werden. Lücken werden dadurch angezeigt, dass `is_gap` auf $1$ gesetzt wird. Falls direkt aufeinanderfolgende Lücken auftreten, wird kein neues `pattern_elem` hinzugefügt, sondern die Lückenlänge `gap_len` im bereits vorhandenen erhöht.
+Das Einlesen des Lückensatzes (Z. 104-116) geschieht durch eine for-Schleife, in der alle eingelesenen Wörter in eine Struktur _pattern_elem_ umgewandelt werden und dem Vektor _pattern_ hinzugefügt werden. Lücken werden dadurch angezeigt, dass _is_gap_ auf $1$ gesetzt wird. Falls direkt aufeinanderfolgende Lücken auftreten, wird kein neues _pattern_elem_ hinzugefügt, sondern die Lückenlänge _gap_len_ im bereits vorhandenen erhöht.
 
-Das Finden von Übereinstimmungen geschieht mithilfe einer while-Schleife, gefundene Übereinstimmungen werden als Paar aus Zeile und Wortnummer in `matches` gespeichert. `i` ist der Anfangsindex der aktuellen Übereinstimmung in `text`. `j` ist die Länge der aktuellen Übereinstimmung, gemessen an der Anzahl Wörtern und `k` der Index des nächsten zu überprüfenden Elements in `pattern` (Z. 115). `j` kann von `k` abweichen, da mehrere Lücken als ein `pattern_elem` zusammengefasst werden können. In der while-Schleife werden drei Fälle unterschieden: Ist das aktuelle Wort im Lückensatz eine Lücke, werden die nächsten `gap_len` Wörter übersprungen (Z. 119-123). Der zweite Fall ist, dass das nächste Wort in Text und Lückensatz übereinstimmen, sodass `j` und `k` erhöht werden (Z. 124-128). Im dritten Fall müssen sich die Wörter in Text und Lückensatz unterscheiden, sodass die aktuelle Übereinstimmung abgebrochen und `i` erhöht wird (Z. 129-134). Zuletzt wird überprüft, ob die aktuelle Übereinstimmung vollständig ist, sodass sie zu `matches` hinzugefügt werden kann (Z. 136-142).
+Das Finden von Übereinstimmungen geschieht mithilfe einer while-Schleife, gefundene Übereinstimmungen werden als Paar aus Zeile und Wortnummer in _matches_ gespeichert. _i_ ist der Anfangsindex der aktuellen Übereinstimmung in _text_. _j_ ist die Länge der aktuellen Übereinstimmung, gemessen an der Anzahl Wörtern und _k_ der Index des nächsten zu überprüfenden Elements in _pattern_ (Z. 115). _j_ kann von _k_ abweichen, da mehrere Lücken als ein _pattern_elem_ zusammengefasst werden können. In der while-Schleife werden drei Fälle unterschieden: Ist das aktuelle Wort im Lückensatz eine Lücke, werden die nächsten _gap_len_ Wörter übersprungen (Z. 119-123). Der zweite Fall ist, dass das nächste Wort in Text und Lückensatz übereinstimmen, sodass _j_ und _k_ erhöht werden (Z. 124-128). Im dritten Fall müssen sich die Wörter in Text und Lückensatz unterscheiden, sodass die aktuelle Übereinstimmung abgebrochen und _i_ erhöht wird (Z. 129-134). Zuletzt wird überprüft, ob die aktuelle Übereinstimmung vollständig ist, sodass sie zu _matches_ hinzugefügt werden kann (Z. 136-142).
 
 Im letzten Teil des Programms werden die Ergebnisse der Suche ausgegeben. Die Angabe von Zeile und Stelle des ersten Worts bei einer Übereinstimmung ist deshalb sinnvoll, da Bücher (und Textdateien) üblicherweise nach Zeilen gegliedert sind und so das Auffinden der Stelle besonders einfach wird.
 
 ## Beispiele
 
-Die Richtigkeit der Ausgabe wurde bei allen gezeigten Beispielen mithilfe der Suchfunktion eines Texteditors überprüft. Dazu wurde nach einem im Lückensatz vorkommenden Wort gesucht und alle Vorkommnisse dessen angesehen, um Übereinstimmungen zu finden. Alice im Wunderland beinhaltet ca. 130 000 Zeichen ohne Leerzeichen. Um das Programm noch an einem anderen Text zu testen und zu sehen, wie es sich bei größeren Texten verhält, sind auch Beispiele mit Kants _Kritik der reinen Vernunft_ als Suchtext (ca. 1 060 000 Zeichen) angeführt.
+Die Richtigkeit der Ausgabe wurde bei allen gezeigten Beispielen mithilfe der Suchfunktion eines Texteditors überprüft. Dazu wurde nach einem im Lückensatz vorkommenden Wort gesucht und alle Vorkommnisse dessen angesehen, um Übereinstimmungen zu finden. Alice im Wunderland beinhaltet ca. 130 000 Zeichen ohne Leerzeichen. Um das Programm noch an einem anderen Text zu testen und zu sehen, wie es sich bei größeren Texten verhält, sind auch Beispiele mit Kants _Kritik der reinen Vernunft_ als Suchtext (ca. 1 060 000 Zeichen) angeführt. Indem _kritik.txt_ als Kommandozeilenargument angegeben wird, kann diese als Suchtext verwendet werden.
 
 ### Alice im Wunderland
 
@@ -142,7 +142,7 @@ Dieses Beispiel wurde als Extremfall hinzugefügt, wegen der großen Zahl an Üb
 
 ### Kritik der reinen Vernunft
 
-Wie zu erwarten, zeigte sich aufgrund der großen Zeichenanzahl eine leicht erhöhte Laufzeit im Vergleich zu Alice im Wunderland. Während alle Beispiele von Alice im Wunderland nach einer Zeit $\le 80 \text{ ms}$ terminierten, lag die Grenze bei diesen Beispielen bei ca. $300 \text{ ms}$.
+Wie zu erwarten, zeigte sich aufgrund der großen Zeichenanzahl eine leicht erhöhte Laufzeit im Vergleich zu Alice im Wunderland. Während alle Beispiele von Alice im Wunderland nach maximal ca. 80 ms terminierten, lag die Grenze bei diesen Beispielen bei ca. 300 ms (Prozessor: AMD Ryzen 3700U Mobile).
 
 #### kritik0.txt
 
@@ -155,7 +155,7 @@ formula _ _ 0
 8237, 7
 ```
 
-Dieses Beispiel wurde gewählt, um zu überprüfen, ob das Programm auch Lückensätze mit Zahlen finden kann. Die gesamte Stelle lautet _"formula 3 - 3 = 0"_. Da '=' und '-' als Satzzeichen behandelt werden, sind zwei Lücken nötig.
+Dieses Beispiel wurde gewählt, um zu überprüfen, ob das Programm auch Lückensätze mit Zahlen finden kann. Die gesamte Stelle lautet _"formula 3 - 3 = 0"_. Da = und - als Satzzeichen behandelt werden, sind zwei Lücken nötig.
 
 #### kritik1.txt
 

@@ -1,10 +1,10 @@
 <h1 style="text-align: center;">Aufgabe 2: Verzinkt</h1>
 
-<p style="text-align: center;">Team-ID: 00968</p>
+<p style="text-align: center;">Team-ID: 00988</p>
 
-<p style="text-align: center;">Finn Rudolph</p>
+<p style="text-align: center;">Team / Bearbeiter: Finn Rudolph</p>
 
-<p style="text-align: center;">25. September 2022</p>
+<p style="text-align: center;">19. November 2022</p>
 
 **Inhaltsverzeichnis**
 
@@ -35,45 +35,45 @@ v_o \cdot t - |j - y_0| \cdot s_{so} & \quad \text{if } j < y_0 \\
 v_o \cdot t - |j - y_0| \cdot s_{no} & \quad \text{else}
 \end{cases}
 $$
-Nach Westen verhält es sich ähnlich. An Zeitpunkt $t$ muss also für jedes $y: v_s \cdot t \le y \le v_n \cdot t$ mithilfe der genannten Beziehung für den maximalen $x$-Abstand jeder Punkt zur Warteschlange hinzugefügt werden, der bei $t-1$ noch ausßerhalb des maximalen $x$-Abstands war. Um den maximalen $x$-Abstand bei $t-1$ sofort zur Verfügung zu haben, werden für jeden Punkt zwei Arrays $\text{ost}$ und $\text{west}$ der Länge $h$ angelegt, in denen dieser gespeichert wird. Außerdem wird das Wachstum eines Kristalls ab einem bestimmten Zeitpunkt an einer $y$-Koordinate nicht mehr möglich sein - z. B. wenn er an den Bildrand oder einen anderen Kristall stößt. Auch diese Information wird in den Arrays abgespeichert. 
+Nach Westen verhält es sich ähnlich. An Zeitpunkt $t$ muss also für jedes $y: v_s \cdot t \le y \le v_n \cdot t$ mithilfe der genannten Beziehung für den maximalen $x$-Abstand jeder Punkt zur Warteschlange hinzugefügt werden, der bei $t-1$ noch außerhalb des maximalen $x$-Abstands war. Um den maximalen $x$-Abstand bei $t-1$ sofort zur Verfügung zu haben, werden für jeden Punkt zwei Arrays _ost_ und _west_ der Länge $h$ angelegt, in denen dieser gespeichert wird. Außerdem wird das Wachstum eines Kristalls ab einem bestimmten Zeitpunkt an einer $y$-Koordinate nicht mehr möglich sein - z. B. wenn er an den Bildrand oder einen anderen Kristall stößt. Auch diese Information wird in den Arrays abgespeichert, indem der Wert dann auf $-\infin$ gesetzt wird. 
 
 ## Laufzeitanalyse
 
-Die Oberschranke der Laufzeit ist, wie bereits genannt $O(nwh \lg(nwh))$. Begründet wird dass dadurch, dass jeder Pixel von jedem Ursprung aus maximal einmal zur Prioritätswarteschlange hinzugefügt werden kann. Die Unterschranke beträgt mit dem verbesserten Ansatz jedoch $\Omega(wh)$, da jeder Pixel mindestens einmal, aber nicht zwingend öfter, betrachtet werden muss. 
+Die Oberschranke der Laufzeit ist, wie bereits genannt $O(nwh \lg(nwh))$. Begründet wird dass dadurch, dass jeder Pixel von jedem Ursprung aus maximal einmal zur Prioritätswarteschlange hinzugefügt werden kann. Die Prioritätswarteschlange fügt den logarithmischen Faktor hinzu. Die Unterschranke beträgt mit dem verbesserten Ansatz jedoch $\Omega(wh)$, da jeder Pixel mindestens einmal, aber nicht zwingend öfter, betrachtet werden muss. 
 
-Insgesamt ist der verbesserte Ansatz ähnlich zur $\Theta(nwh \lg(nwh))$ Lösung, nur dass das Hinzufügen der Ereignisse zur Prioritätswarteschlange aufgeteilt wird und nicht auf einmal geschieht. Indem nicht alle Ereignisse sofort hinzugefügt werden, wird meistens nicht von jedem Ursprungspunkt aus jeder Pixel betrachtet, da bei Kollision mit einem zweiten Kristall in diese Richtung frühzeitig gestoppt wird.
+Insgesamt ist der verbesserte Ansatz ähnlich zur bereits genannten $\Theta(nwh \lg(nwh))$ Lösung, nur dass das Hinzufügen der Ereignisse zur Prioritätswarteschlange aufgeteilt wird und nicht auf einmal geschieht. Indem nicht alle Ereignisse sofort hinzugefügt werden, wird meistens nicht von jedem Ursprungspunkt aus jeder Pixel betrachtet, da bei Kollision mit einem zweiten Kristall in diese Richtung frühzeitig gestoppt wird.
 
 ## Implementierung
 
 Das Programm wird in C++ geschrieben, zur Erstellung von PNG-Bildern wird die Bibliothek LodePNG (siehe Quellen) verwendet.
 
-Um die Simulation einfach anpassbar zu machen, können Ursprungskoordinaten, Ausbreitungsgeschwindigkeiten, Startzeit und Farbe jedes Kristalls angegeben werden. Nicht angegebene Parameter werden zufällig gewählt. Die Geschwindigkeiten liegen bei zufälliger Wahl zwischen 1 und 9 Pixeln pro Zeiteinheit (Z. 80), die Startzeitpunkte zwischen 0 und $w / 64$ (Z. 96). Diese Werte haben sich experimentell als geeignet herausgestellt, um verschiedenartige, aber auch ausgeglichene Bilder zu erhalten. Auch die Abmessungen des Bilds können angegeben werden, standardmäßig werden sie auf $1920 \times 1080$ gesetzt. Breite und Höhe werden vertauscht, falls die Höhe größer als die Breite ist (Z. 200-201). Das verringert den Speicherverbrauch des Programms, da für jeden Knoten ein Array der Länge $h$ angelegt wird. Falls gewünscht, kann das ausgegebene Bild einfach wieder gedreht werden. Wenn die Ursprungskoordinaten der Punkte angegeben werden, werden die Abmessungen so gewählt, dass jeder Punkt mindestens 50 Pixel Abstand zum unteren und rechten Ende hat. Der Ursprung des Koordinatensystems ist in der oberen linken Ecke, die $y$-Achse verläuft ansteigend nach unten. Um auszuwählen, welche der genannten Größen manuell gesetzt werden sollen, können folgende Flags beim Ausführen des Programms in der Kommandozeile mitgegeben werden.
+Um die Simulation einfach anpassbar zu machen, können Ursprungskoordinaten, Ausbreitungsgeschwindigkeiten, Startzeit und Farbe jedes Kristalls angegeben werden. Nicht angegebene Parameter werden zufällig gewählt. Die Geschwindigkeiten liegen bei zufälliger Wahl zwischen 1 und 9 Pixeln pro Zeiteinheit (Z. 80), die Startzeitpunkte zwischen 0 und $w / 64$ (Z. 96). Diese Werte haben sich experimentell als geeignet herausgestellt, um verschiedenartige, aber auch ausgeglichene Bilder zu erhalten. Auch die Abmessungen des Bilds können angegeben werden, standardmäßig werden sie auf $1920 \times 1080$ gesetzt. Breite und Höhe werden vertauscht, falls die Höhe größer als die Breite ist (Z. 200-201). Das verringert den Speicherverbrauch des Programms, da für jeden Startpunkt ein Array der Länge $h$ angelegt wird. Falls gewünscht, kann das ausgegebene Bild einfach wieder gedreht werden. Wenn die Ursprungskoordinaten der Punkte angegeben werden, werden die Abmessungen so gewählt, dass jeder Punkt mindestens 50 Pixel Abstand zum unteren und rechten Ende hat. Der Ursprung des Koordinatensystems ist in der oberen linken Ecke, die $y$-Achse verläuft ansteigend nach unten. Um auszuwählen, welche der genannten Größen manuell gesetzt werden sollen, können folgende Flags beim Ausführen des Programms in der Kommandozeile mitgegeben werden.
 
 | Flag | Parameter                       |
 | ---- | ------------------------------- |
-| `-p` | Koordinaten der Ursprungspunkte |
-| `-v` | Ausbreitungsgeschwindigkeiten   |
-| `-t` | Startzeiten                     |
-| `-c` | Farben                          |
-| `-d` | Abmessungen des Bilds           |
+| _-p_ | Koordinaten der Ursprungspunkte |
+| _-v_ | Ausbreitungsgeschwindigkeiten   |
+| _-t_ | Startzeiten                     |
+| _-c_ | Farben                          |
+| _-d_ | Abmessungen des Bilds           |
 
-Für jede der ersten vier Flags, die gesetzt ist, müssen dann jeweils $n$ Werte gegeben werden. Auch kann der Name der Datei des Ergebnisbilds als Argument in der Kommandozeile angegeben werden.
+Für jede der ersten vier Flags, die gesetzt ist, müssen dann jeweils $n$ Werte gegeben werden. Die Werte selbst werden allerdings nicht als Argument mitgegeben, sondern nach Start des Programms abgefragt. Auch kann der Name der Datei des Ergebnisbilds als Argument in der Kommandozeile angegeben werden.
 
-Der erste Teil der `main`-Funktion (Z. 167-270) kümmert sich nur um das Einlesen der Parameter bzw. zufällige Generieren. Da das nicht der Kern der Aufgabe ist, wird dieser Teil nicht erklärt. Auch die Funktionen in den Zeilen 54-99 gehören dazu.
+Der erste Teil der _main_-Funktion (Z. 161-265) kümmert sich nur um das Einlesen der Parameter bzw. zufällige Generieren. Da das nicht der Kern der Aufgabe bzw. selbsterklärend ist, wird dieser Teil nicht erklärt. Auch die Funktionen in den Zeilen 54-99 gehören dazu. Für einen kurzen Überblick: Nachdem bestimmt wurde, welche Flags gesetzt sind, wird für diese eine Eingabe vom Benutzer gefordert, andernfalls die nötigen Werte mithilfe der Funktionen in den Zeilen 54-99 generiert. Diese Funktionen basieren alle auf _std::rand()_, einer pseudozufälligen Funktion aus dem C++ Standard Library.
 
-Zunächst werden die für die Simulation nötigen Datenstrukturen angelegt (Z. 263-273). `res` enthält das Ergebnis der Simulation und wird danach an LodePNG gegeben. `diagram` dient dazu, schnell überprüfen zu können, ob ein Pixel zu einem Kristall gehört und zu welchem. `east` und `west` enthalten für jeden Ursprung die bereits angesprochenen Arrays, in denen der letzte nach Osten bzw. Westen eingeschlossene $x$-Wert für jeden $y$-Wert für jeden Kristall steht. `slopes` dient lediglich dazu, die Steigungen aller Liniensegmente nicht ständig neu berechnen zu müssen. `east` und `west` werden inital mit $x_0$ bzw. $x_0 -1$ befüllt, sodass `east` die Punkte auf $x = x_0$ mit einschließt (Z. 275-284).
+Zunächst werden die für die Simulation nötigen Datenstrukturen angelegt (Z. 267-278). _res_ enthält das Ergebnis der Simulation und wird danach an LodePNG gegeben. _diagram_ speichert den Index des Kristalls, zu dem ein Pixel gehört, oder _SIZE_MAX_, falls der Pixel noch zu keinem Kristall gehört. Das dient dazu, schnell überprüfen zu können, ob ein Pixel zu einem Kristall gehört und zu welchem. _east_ und _west_ enthalten für jeden Ursprung die bereits angesprochenen Arrays, in denen der letzte nach Osten bzw. Westen eingeschlossene $x$-Wert für jeden $y$-Wert für jeden Kristall steht. _slopes_ dient lediglich dazu, die Steigungen aller Liniensegmente nicht ständig neu berechnen zu müssen. _east_ und _west_ werden anfänglich mit $x_0$ bzw. $x_0 -1$ befüllt, sodass _east_ die Punkte auf $x = x_0$ mit einschließt (Z. 280-289).
 
-Die folgende for-Schleife enthält die eigentliche Simulation (Z. 288-323). Bis alle Pixel einem Kristall zugeordnet sind sind, wird an jedem Zeitpunkt für jeden bereits gestarteten Ursprung zunächst die aktuellen Ausbreitung in die vier Hauptrichtungen berechnet (Z. 296-300). Da das Einfügen von Ereignissen nach Ost und West ähnlich ist, wird es in die Funktion `update_queue` verschoben, um Codewiederholung zu vermeiden. Unter ihren (sehr zahlreichen) Parametern sind viele selbsterklärend, nur einige sollen kurz erläutert werden: `last` ist entweder `east[i]` oder `west[i]`, `a` ist die $y$-Koordinate der südlichen und `b` die der nördlichen Spitze des Kristalls. `u` ist `v_o` bzw. `v_w` und `v` ist die Ausbreitungsgeschwindigkeit in Ost- bzw. Westrichtung. In `update_queue` werden für jedes $j : a \le j \le b$ alle neu hinzugekommenen Punkte in die Warteschlange eingefügt. Zunächst werden die $x$-Grenzen der zu betrachteten Punkte ermittelt: Das Ende kann durch oben genannte Beziehung errechnet werden, der Anfang ist noch in `last` gespeichert (Z. 118-125). Die umständliche Berechnung vermeidet Rundungsfehler mit Gleitkommazahlen. Die anschließende for-Schleife iteriert von der Geraden $x = x_0$ weg über alle einzufügenden $x$-Koordinaten (Z. 134-150). Es werden zwei Fälle unterschieden: Ist der Pixel noch frei, wird das als Ereignis hinzugefügt, andernfalls die Iteration abgebrochen, da der Kristall gegen einen anderen gestoßen ist. Zuletzt wird der zuletzt betrachtete $x$-Wert aktualisiert oder auf `INT_MIN` gesetzt, falls ein anderer Kristall entdeckt wurde. Der Ausdruck zur Errechnung des Zeitpunkts des Zusammenstoßes (Z. 138-141) ist leicht nachvollziehbar, in Abbildung 3 wird die Idee veranschaulicht. Sie zeigt den Fall eines Punkts, der nordöstlich des Kristallursprungs liegt. Die Idee ist, die $x$-Koordinate des Schnittpunks der Geraden $y = y_0$ mit der Geraden mit Steigung `slope_up`, die durch den Punkt verläuft zu berechnen. Diese geteilt durch $v_o$ ist der Zeitpunkt der Berührung.
+Die folgende for-Schleife enthält die eigentliche Simulation (Z. 293-330). Bis alle Pixel einem Kristall zugeordnet sind sind, wird an jedem Zeitpunkt für jeden bereits gestarteten Ursprung zunächst die aktuelle Ausbreitung in die vier Hauptrichtungen berechnet und in den Variablen _v_n, v_s, v_o, v_w_ gespeichert (Z. 302-306). Da das Einfügen von Ereignissen nach Ost und West ähnlich ist, wird es in die Funktion _update_queue_ verschoben, um Codewiederholung zu vermeiden. Unter ihren Parametern sind viele durch den Namen selbsterklärend, nur einige sollen kurz erläutert werden: _last_ ist entweder _east[i]_ oder _west[i]_, _a_ ist die $y$-Koordinate der südlichen und _b_ die der nördlichen Spitze des Kristalls. _u_ ist _v_o_ bzw. _v_w_ (Ausbreitung in Ost- bzw. Westrichtung) und _v_ ist die Ausbreitungsgeschwindigkeit in Ost- bzw. Westrichtung. In _update_queue_ werden für jedes $j : a \le j \le b$ alle neu in den Kristall eingeschlossenen Punkte in die Warteschlange eingefügt. Zunächst werden die $x$-Grenzen der zu betrachteten Punkte ermittelt: Das Ende kann durch oben genannte Beziehung errechnet werden, der Anfang ist noch in _last_ gespeichert (Z. 118-125). Die Berechnungen in den Zeilen 119-122 runden den neuen Abstand auf bzw. zur nächsten Ganzzahl, falls diese sehr nah liegt, um Rundungsfehler mit Gleitkommazahlen zu vermeiden. Die anschließende for-Schleife iteriert von der Geraden $x = x_0$ weg über alle einzufügenden $x$-Koordinaten (Z. 135-153). Es werden zwei Fälle unterschieden: Ist der Pixel noch frei, d. h. _diagram\[k][j] == SIZE_MAX_, wird das als Ereignis hinzugefügt, andernfalls die Iteration abgebrochen, da der Kristall gegen einen anderen gestoßen ist. Zuletzt wird der zuletzt betrachtete $x$-Wert aktualisiert oder auf _INT_MIN_ gesetzt, falls ein anderer Kristall entdeckt wurde. Der Ausdruck zur Errechnung des Zeitpunkts des Zusammenstoßes (Z. 141-144) ist leicht nachvollziehbar, in Abbildung 3 wird die Idee veranschaulicht. Sie zeigt den Fall eines Punkts, der nordöstlich des Kristallursprungs liegt. Die Idee ist, die $x$-Koordinate des Schnittpunks der Geraden $y = y_0$ mit der Geraden mit Steigung _slope_up_, die durch den Punkt verläuft, zu berechnen. Diese geteilt durch $v_o$ ist der Zeitpunkt der Berührung.
 
 ![](grafiken/zeit_berechnung.svg)
 
-_Abbildung 3: Skizze zur Berechnung des Berührungszeitpunkts eines Kristalls mit einem Punkt. Siehe Z. 138-141 im Quellcode._
+_Abbildung 3: Skizze zur Berechnung des Berührungszeitpunkts eines Kristalls mit einem Punkt. Siehe Z. 141-144 im Quellcode._
 
-Nachdem alle Kristallursprünge für den aktuellen Zeitpunkt verarbeitet wurde, wird die Prioritätswarteschlange geleert, sodass alle Ereignisse in richtiger Zeitfolge betrachtet werden (Z. 311-322). Wenn ein Pixel noch frei ist, wird die Farbe seines Kristalls in `res` gesetzt und in `diagram` an dieser Stelle der Index des Kristalls eingetragen. `set_color` findet sich in Z. 101-106, es setzt den R, G und B-Wert des Pixels auf den gleichen Wert, sodass ein Grauton entsteht. Der A-Wert (Alpha-Wert oder Transparenz) wird auf das Maximum gesetzt, da das Bild nicht transparent sein soll.
+Nachdem alle Kristallursprünge für den aktuellen Zeitpunkt verarbeitet wurde, wird die Prioritätswarteschlange geleert, sodass alle Ereignisse in richtiger Zeitfolge betrachtet werden (Z. 318-329). Wenn ein Pixel noch frei ist, wird die Farbe seines Kristalls in _res_ gesetzt und in _diagram_ an dieser Stelle der Index des Kristalls eingetragen. _set_color_ findet sich in Z. 101-106, es setzt den R, G und B-Wert des Pixels auf den gleichen Wert, sodass ein Grauton entsteht. Der A-Wert (Alpha-Wert oder Transparenz) wird auf das Maximum gesetzt, da das Bild nicht transparent sein soll.
 
 ## Beispiele
 
-Im Folgenden werden einige völlig zufällig erzeugt Kristallmuster gezeigt, sowie Beispiele für manuelles Wählen der Parameter. Dass die Anzahl tatsächlich sichtbarer Kristalle teilweise nicht mit $n$ übereinstimmt, liegt daran, dass ein Kristallursprung bereits vor seinem Startzeitpunkt von einem anderen Kristall überdeckt wird und so nicht im Bild erscheint.
+Im Folgenden werden einige völlig zufällig erzeugt Kristallmuster gezeigt, sowie Beispiele mit manueller Wahl der Parameter. Dass die Anzahl tatsächlich sichtbarer Kristalle teilweise nicht mit $n$ übereinstimmt, liegt daran, dass ein Kristallursprung bereits vor seinem Startzeitpunkt von einem anderen Kristall überdeckt wird und so nicht im Bild erscheint.
 
 ### Zufällige Parameter
 
@@ -284,14 +284,17 @@ void update_queue(
         int xend = x + u - d;
         int xbegin = last[j];
 
-        if ((!west && xbegin >= width) || (west && xbegin < 0) || xbegin == INT_MIN)
+        if ((!west && xbegin >= width) || (west && xbegin < 0) ||
+            xbegin == INT_MIN)
             continue;
 
         if (west)
             xend = 2 * x - xend;
 
         bool can_continue = 1;
-        for (int k = xbegin; (west ? k >= xend : k <= xend) && k < width && k >= 0; k += (west ? -1 : 1))
+        for (int k = xbegin;
+             (west ? k >= xend : k <= xend) && k < width && k >= 0;
+             k += (west ? -1 : 1))
         {
             if (diagram[k][j] == SIZE_MAX)
             {
@@ -383,7 +386,8 @@ int main(int argc, char **argv)
 
     if (op & VELOCITY)
     {
-        std::cout << "Geschwindigkeiten in Nord- / Süd- / Ost- / West-Richtung [N S O W]:\n";
+        std::cout << "Geschwindigkeiten in Nord- / Süd- / Ost- / West-Richtung "
+                     "[N S O W]:\n";
         for (size_t i = 0; i < n; i++)
         {
             int v_n, v_s, v_o, v_w;
@@ -423,7 +427,8 @@ int main(int argc, char **argv)
     // Das Ergebnisbild mit RGBA-Werten für jeden Pixel.
     std::vector<uint8_t> res(width * height * 4, 0);
     // Der Index des Kristalls, dem der Pixel zugehörig ist (oder SIZE_MAX).
-    std::vector<std::vector<size_t>> diagram(width, std::vector<size_t>(height, SIZE_MAX));
+    std::vector<std::vector<size_t>>
+        diagram(width, std::vector<size_t>(height, SIZE_MAX));
     // Enthält für jedes y den Punkt, der bei der Ausbreitung nach Ost bzw.
     // West zuletzt hinzugefügt wurde. Falls die Ausbreitung für ein y nicht
     // mehr möglich ist, steht an der Stelle -1.
@@ -460,11 +465,13 @@ int main(int argc, char **argv)
                     v_w = velocities[i].w * (t - times[i]);
 
                 update_queue(q, east[i], diagram, width, height,
-                             y - v_s, y + v_n, x, y, v_o, velocities[i].o, colors[i],
-                             slopes[i].so, slopes[i].no, times[i], i, 0);
+                             y - v_s, y + v_n, x, y, v_o, velocities[i].o,
+                             colors[i], slopes[i].so, slopes[i].no, times[i],
+                             i, 0);
                 update_queue(q, west[i], diagram, width, height,
-                             y - v_s, y + v_n, x, y, v_w, velocities[i].w, colors[i],
-                             slopes[i].sw, slopes[i].nw, times[i], i, 1);
+                             y - v_s, y + v_n, x, y, v_w, velocities[i].w,
+                             colors[i], slopes[i].sw, slopes[i].nw, times[i],
+                             i, 1);
             }
         }
 
